@@ -38,6 +38,7 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:#0d1117;color:
 .sb-scr::-webkit-scrollbar{width:3px}
 .sb-scr::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
 .cg{margin-bottom:2px}
+.cat-bar{padding:0 8px 4px 8px}
 .cb{display:flex;width:100%;background:none;border:none;color:#c9d1d9;font-size:13px;padding:7px 8px;cursor:pointer;border-radius:5px;justify-content:space-between;align-items:center;text-align:left}
 .cb:hover{background:#21262d}
 .cb.on{background:#1f6feb22;color:#58a6ff;border-left:2px solid #58a6ff}
@@ -86,6 +87,12 @@ td{padding:8px 10px;vertical-align:middle}
 .tm:hover{color:#58a6ff}
 .tm.hi{background:#1f6feb22;color:#58a6ff}
 .pos{font-size:11px;color:#6e7681;margin-top:5px;line-height:1.5;word-break:break-word}
+.pbar{display:flex;height:3px;border-radius:2px;overflow:hidden;margin-top:4px;gap:1px}
+.pbar-u{background:#f85149}
+.pbar-d{background:#3fb950}
+.pbar-f{background:#30363d}
+.pct-txt{font-size:10px;color:#8b949e;margin-top:2px;display:flex;gap:4px;line-height:1}
+.pct-u{color:#f85149}.pct-d{color:#3fb950}
 .sts{padding:5px 12px;background:#0d1117;border-top:1px solid #21262d;display:flex;gap:14px;flex-shrink:0}
 .si{font-size:11px;color:#8b949e}
 .si b{color:#c9d1d9;margin-left:3px}
@@ -162,7 +169,7 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
       </select>
       <button class="clr" onclick="selAll()">✕ 清除</button>
     </div>
-    <div class="tw">
+    <div class="tw" id="tw">
       <table>
         <thead><tr>
           <th style="width:52px" onclick="srt('code')">代碼</th><th style="width:72px" onclick="srt('name')">名稱</th><th style="width:58px" onclick="srt('close')">昨收</th><th style="width:68px" onclick="srt('pct')">漲幅%</th><th style="width:58px" onclick="srt('avg')">均價</th><th style="width:68px" onclick="srt('volume')">成交</th><th style="width:68px" onclick="srt('turnover')">換手率%</th><th style="width:68px" onclick="srt('capital')">股本(億)</th><th style="width:72px" onclick="srt('turnval')">成交值</th><th style="width:76px" onclick="srt('margin')">融資維持%</th><th>產業標籤 / 產業地位</th>
@@ -212,20 +219,37 @@ function init(){
   D.forEach(function(s){s.tags.forEach(function(t){tc[t]=(tc[t]||0)+1;});});
   var h='';
   Object.keys(C).forEach(function(cat){
-    var tags=C[cat],cnt=0;
-    D.forEach(function(s){if(s.tags.some(function(t){return tags.indexOf(t)>=0;}))cnt++;});
+    var tags=C[cat];
+    var stocks=D.filter(function(s){return s.tags.some(function(t){return tags.indexOf(t)>=0;});});
+    var cnt=stocks.length;
     if(!cnt)return;
+    var ups=stocks.filter(function(s){return s.pct!==null&&s.pct>0;}).length;
+    var dns=stocks.filter(function(s){return s.pct!==null&&s.pct<0;}).length;
+    var flt=cnt-ups-dns;
+    var upW=Math.round(ups/cnt*100),dnW=Math.round(dns/cnt*100),fW=100-upW-dnW;
+    var bar='<div class="pbar">'
+      +'<div class="pbar-u" style="width:'+upW+'%"></div>'
+      +'<div class="pbar-f" style="width:'+fW+'%"></div>'
+      +'<div class="pbar-d" style="width:'+dnW+'%"></div>'
+      +'</div>'
+      +'<div class="pct-txt">'
+      +'<span class="pct-u">▲'+ups+'</span>'
+      +'<span class="pct-d">▼'+dns+'</span>'
+      +(flt?'<span style="color:#6e7681">－'+flt+'</span>':'')
+      +'</div>';
     var chips=tags.filter(function(t){return tc[t];}).map(function(t){
       return '<span class="tc" data-t="'+t+'" onclick="cChip(this,\''+t+'\')">'+t+' <small>'+tc[t]+'</small></span>';
     }).join('');
-    h+='<div class="cg"><button class="cb" data-cat="'+cat+'" onclick="cCat(this)"><span>'+cat+'</span><span class="n">'+cnt+'</span></button><div class="tb">'+chips+'</div></div>';
+    h+='<div class="cg"><button class="cb" data-cat="'+cat+'" onclick="cCat(this)"><span>'+cat+'</span><span class="n">'+cnt+'</span></button>'
+      +'<div class="cat-bar">'+bar+'</div>'
+      +'<div class="tb">'+chips+'</div></div>';
   });
   document.getElementById('cats').innerHTML=h;
   document.getElementById('alln').textContent=D.length;
 }
 
 function cCat(btn){
-  var box=btn.nextElementSibling,open=!box.classList.contains('on');
+  var box=btn.parentElement.querySelector('.tb'),open=!box.classList.contains('on');
   // 關閉其他已展開的分類
   document.querySelectorAll('.tb.on').forEach(function(b){
     if(b!==box) b.classList.remove('on');
@@ -376,7 +400,7 @@ function rRows(data){
     var show=hi.length?hi:s.tags.slice(0,4);
     var chips=show.map(function(t){
       var h=hi.indexOf(t)>=0;
-      return '<span class="tm'+(h?' hi':'')+'" onclick="event.stopPropagation();addTag(\''+t+'\')">'+t+'</span>';
+      return '<span class="tm'+(h?' hi':'')+' " data-tag="'+t.replace(/"/g,'&quot;')+'">'+ t+'</span>';
     }).join('');
     return '<tr><td><span class="cd lnk" onclick="event.stopPropagation();window.open(\'https://www.cnyes.com/twstock/'+s.code+'\',\'_blank\')">'+s.code+'</span></td><td><span class="nm" data-tip="'+s.position.replace(/"/g,'&quot;')+'">'+s.name+'</span></td>'
       +'<td>'+(s.close!==null?s.close.toFixed(1):'--')+'</td>'
@@ -390,6 +414,10 @@ function rRows(data){
 }
 
 function loadXL(inp){if(inp.files&&inp.files[0])parseXL(inp.files[0]);inp.value='';}
+document.getElementById('tw').addEventListener('click',function(e){
+  var tm=e.target.closest('.tm');
+  if(tm){e.stopPropagation();var tag=tm.getAttribute('data-tag');if(tag)addTag(tag);}
+});
 document.addEventListener('dragover',function(e){e.preventDefault();});
 document.addEventListener('drop',function(e){
   e.preventDefault();

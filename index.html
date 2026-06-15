@@ -121,6 +121,21 @@ td{padding:5px 6px;vertical-align:middle}
 .wrn{background:#2d1f1f;border-left:3px solid #f85149;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#8b949e;line-height:1.6;margin-top:8px}
 hr{border:none;border-top:1px solid #30363d;margin:14px 0}
 
+.btn-b{background:none;border:1px solid #30363d;border-radius:5px;padding:5px 12px;font-size:13px;color:#8b949e;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-b:hover{border-color:#58a6ff;color:#58a6ff}
+.gd-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #21262d;cursor:pointer;border-radius:6px;transition:background .15s}
+.gd-item:last-child{border:none}
+.gd-item:hover{background:#21262d}
+.gd-icon{font-size:22px;flex-shrink:0}
+.gd-info{flex:1;min-width:0}
+.gd-name{color:#e6edf3;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gd-meta{color:#8b949e;font-size:11px;margin-top:2px}
+.gd-arr{color:#8b949e;font-size:16px}
+.gd-empty{text-align:center;padding:40px 20px;color:#8b949e;font-size:13px}
+.gd-loading{text-align:center;padding:40px 20px;color:#8b949e;font-size:13px}
+.gd-open{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-top:1px solid #30363d;margin-top:6px}
+.gd-open a{color:#58a6ff;font-size:12px;text-decoration:none}
+.gd-open a:hover{text-decoration:underline}
 #link-pop{display:none;position:fixed;z-index:200;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 16px;box-shadow:0 4px 20px #000a;min-width:220px}
 #link-pop a{display:block;color:#58a6ff;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:4px}
 #link-pop a:hover{text-decoration:underline}
@@ -135,6 +150,7 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
   <div class="hdr-r">
     <span class="bdg" id="dlbl" style="color:#f85149">尚未載入資料</span>
     <button class="btn-o" onclick="document.getElementById('hm').classList.add('on')">❓ 欄位說明</button>
+    <button class="btn-b" onclick="openDrivePicker()">☁️ 雲端載入</button>
     <button class="btn-g" onclick="document.getElementById('fi').click()">📄 載入 Excel</button>
     <input id="fi" type="file" accept=".xlsx,.xls" style="display:none" onchange="loadXL(this)">
   </div>
@@ -489,6 +505,145 @@ document.addEventListener('click',function(e){
   if(!e.target.closest('#link-pop')&&!e.target.classList.contains('lnk'))
     document.getElementById('link-pop').style.display='none';
 });
+
+// ── GAS API 設定（部署後將 URL 填入此處）──────────────────
+var GAS_URL='https://script.google.com/macros/s/AKfycbwV9CWC1p0Kr-hPb7wqeab6_5z39Wl5i7Cf5P7QISE3hVyYxhjH2fNKyqZ7GfXzIgcB/exec';
+var gdFiles=[];
+
+function openDrivePicker(){
+  document.getElementById('gd-modal').classList.add('on');
+  if(!GAS_URL){
+    showGasNotSet();
+    return;
+  }
+  document.getElementById('gd-list').innerHTML=
+    '<div class="gd-loading"><div style="font-size:24px;margin-bottom:8px">🔄</div>連線雲端，讀取檔案清單...</div>';
+  fetch(GAS_URL+'?action=list')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.ok) renderDriveFiles(d.files);
+      else showGasError(d.error||'未知錯誤');
+    })
+    .catch(function(err){showGasError(err.message);});
+}
+
+function showGasNotSet(){
+  document.getElementById('gd-list').innerHTML=
+    '<div style="padding:20px">'
+    +'<div style="background:#2d2008;border:1px solid #d29922;border-radius:8px;padding:14px 16px;margin-bottom:16px">'
+    +'<div style="color:#d29922;font-size:13px;font-weight:600;margin-bottom:6px">⚙️ 尚未設定 GAS API 網址</div>'
+    +'<div style="color:#8b949e;font-size:12px;line-height:1.8">請先完成 Google Apps Script 部署，並將 URL 填入 index.html 的 <code style="color:#79c0ff;background:#21262d;padding:1px 5px;border-radius:3px">GAS_URL</code> 變數。</div>'
+    +'</div>'
+    +'<div style="font-size:13px;color:#c9d1d9;font-weight:600;margin-bottom:10px">📋 部署步驟</div>'
+    +'<div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#8b949e">'
+    +'<div style="display:flex;gap:10px;align-items:flex-start"><span style="color:#58a6ff;font-weight:700;flex-shrink:0">①</span><span>前往 <a href="https://script.google.com" target="_blank" style="color:#58a6ff">script.google.com</a> 建立新專案，貼上 <b style="color:#c9d1d9">Code.gs</b> 的內容</span></div>'
+    +'<div style="display:flex;gap:10px;align-items:flex-start"><span style="color:#58a6ff;font-weight:700;flex-shrink:0">②</span><span>點「部署」→「新增部署作業」→ 類型選「網頁應用程式」</span></div>'
+    +'<div style="display:flex;gap:10px;align-items:flex-start"><span style="color:#58a6ff;font-weight:700;flex-shrink:0">③</span><span>執行身分：<b style="color:#c9d1d9">我</b>，存取對象：<b style="color:#c9d1d9">所有人</b>，按「部署」</span></div>'
+    +'<div style="display:flex;gap:10px;align-items:flex-start"><span style="color:#58a6ff;font-weight:700;flex-shrink:0">④</span><span>複製產生的 URL，填入 index.html 第一行 <code style="color:#79c0ff;background:#21262d;padding:1px 5px;border-radius:3px">GAS_URL=\'...\'</code></span></div>'
+    +'</div>'
+    +'<div style="margin-top:16px;display:flex;gap:8px">'
+    +'<a href="https://script.google.com" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#1f6feb22;border:1px solid #1f6feb55;border-radius:6px;padding:9px 12px;text-decoration:none;color:#58a6ff;font-size:12px;font-weight:600">🚀 開啟 Apps Script</a>'
+    +'<div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#21262d;border:1px dashed #30363d;border-radius:6px;padding:9px 12px;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer" onclick="document.getElementById(\'gd-modal\').classList.remove(\'on\');setTimeout(function(){document.getElementById(\'fi\').click();},100)">📄 本機載入</div>'
+    +'</div>'
+    +'</div>';
+}
+
+function showGasError(msg){
+  document.getElementById('gd-list').innerHTML=
+    '<div style="padding:16px">'
+    +'<div style="background:#2d1f1f;border:1px solid #f85149;border-radius:8px;padding:14px 16px;margin-bottom:12px">'
+    +'<div style="color:#f85149;font-size:13px;font-weight:600;margin-bottom:4px">❌ API 連線失敗</div>'
+    +'<div style="color:#8b949e;font-size:12px;word-break:break-all">'+msg+'</div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="openDrivePicker()" style="flex:1;background:#1f6feb22;border:1px solid #1f6feb55;border-radius:6px;padding:8px;color:#58a6ff;font-size:12px;cursor:pointer">🔄 重試</button>'
+    +'<button onclick="document.getElementById(\'gd-modal\').classList.remove(\'on\');setTimeout(function(){document.getElementById(\'fi\').click();},100)" style="flex:1;background:#21262d;border:1px solid #30363d;border-radius:6px;padding:8px;color:#8b949e;font-size:12px;cursor:pointer">📄 本機載入</button>'
+    +'</div></div>';
+}
+
+function renderDriveFiles(files){
+  gdFiles=files;
+  if(!files.length){
+    document.getElementById('gd-list').innerHTML=
+      '<div class="gd-empty"><div style="font-size:32px;margin-bottom:8px">📂</div>資料夾中沒有 Excel 檔案</div>';
+    return;
+  }
+  document.getElementById('gd-list').innerHTML=
+    '<div style="padding:6px 14px 4px;font-size:11px;color:#8b949e">共 '+files.length+' 個檔案，點擊直接載入</div>'
+    +files.map(function(f,i){
+      var mod=f.modified?new Date(f.modified):'';
+      var dateStr=mod?mod.toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'}):'';
+      var timeStr=mod?mod.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}):'';
+      var m=f.name.match(/(\d{8})/);
+      var nameLabel=m?m[1].substring(0,4)+'/'+m[1].substring(4,6)+'/'+m[1].substring(6,8):f.name;
+      var sizeStr=f.size?(f.size>1048576?(f.size/1048576).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB'):'';
+      var isNew=(mod&&(Date.now()-mod.getTime())<86400000);
+      return '<div class="gd-item" onclick="loadDriveFile('+i+')">'
+        +'<span class="gd-icon">'+(f.isSheet?'📋':'📊')+'</span>'
+        +'<div class="gd-info">'
+          +'<div class="gd-name">'+f.name+(isNew?' <span style="background:#238636;border-radius:3px;padding:1px 5px;font-size:10px;color:#fff;margin-left:4px">NEW</span>':'')+'</div>'
+          +'<div class="gd-meta">'+dateStr+' '+timeStr+(sizeStr?' · '+sizeStr:'')+'</div>'
+        +'</div>'
+        +'<span class="gd-arr">›</span>'
+        +'</div>';
+    }).join('');
+}
+
+function loadDriveFile(i){
+  var f=gdFiles[i];
+  if(!f)return;
+  document.getElementById('gd-modal').classList.remove('on');
+  var t=document.getElementById('toast');
+  t.style.background='#1f6feb';
+  t.textContent='⏳ 讀取中：'+f.name;
+  t.style.display='block';
+  fetch(GAS_URL+'?action=file&id='+f.id)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.ok){throw new Error(d.error||'API 回傳錯誤');}
+      var binary=atob(d.base64);
+      var bytes=new Uint8Array(binary.length);
+      for(var i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+      parseXLFromBuffer(bytes.buffer, d.name||f.name);
+    })
+    .catch(function(err){
+      t.style.background='#da3633';
+      t.textContent='❌ 載入失敗：'+err.message;
+      setTimeout(function(){t.style.display='none';t.style.background='#238636';},4000);
+    });
+}
+
+function parseXLFromBuffer(buf,filename){
+  try{
+    var wb=XLSX.read(buf,{type:'array'});
+    var ws=wb.Sheets[wb.SheetNames[0]];
+    var rows=XLSX.utils.sheet_to_json(ws,{defval:null});
+    if(!rows.length){alert('讀取失敗');return;}
+    var keys=Object.keys(rows[0]);
+    function fc(arr){for(var i=0;i<arr.length;i++)for(var j=0;j<keys.length;j++)if(keys[j].indexOf(arr[i])>=0)return keys[j];return null;}
+    var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位'])};
+    function sf(v){if(v===null||v===undefined||v===''||v==='--')return null;var n=parseFloat(v);return isNaN(n)?null:n;}
+    var nd=[];
+    rows.forEach(function(r){
+      if(!COL.code||!r[COL.code])return;
+      var ts=COL.ind&&r[COL.ind]?String(r[COL.ind]).split(',').map(function(t){return t.trim();}).filter(function(t){return t&&t!=='null';}):[]; 
+      nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts});
+    });
+    if(!nd.length){alert('沒有讀到有效資料');return;}
+    D=nd;
+    var m=filename.match(/(\d{8})/);
+    if(m){var d=m[1];document.getElementById('dlbl').textContent=d.substring(0,4)+'/'+d.substring(4,6)+'/'+d.substring(6,8);}
+    document.getElementById('dlbl').style.color='#8b949e';
+    document.getElementById('hdr-sub').textContent='產業篩選 · '+D.length+'支股票';
+    init();selAll();
+    var t=document.getElementById('toast');
+    t.style.background='#238636';
+    t.textContent='✅ 載入完成！共 '+D.length+' 支股票';
+    t.style.display='block';
+    setTimeout(function(){t.style.display='none';},3000);
+  }catch(err){alert('讀取失敗: '+err.message);}
+}
+
 init();
 if(D.length===0){
   document.getElementById('tb').innerHTML='<tr><td colspan="10" style="text-align:center;padding:60px 20px;color:#8b949e"><div style="font-size:32px;margin-bottom:12px">📂</div><div style="font-size:15px;color:#c9d1d9;margin-bottom:8px">尚未載入資料</div><div style="font-size:13px">請點右上角「載入 Excel」按鈕匯入 XQ 匯出的股票資料</div></td></tr>';
@@ -497,7 +652,22 @@ if(D.length===0){
 } else { render(); }
 </script>
 
-<div id="link-pop">
+<!-- Google Drive picker modal -->
+<div class="mbg" id="gd-modal" onclick="if(event.target===this)this.classList.remove('on')">
+<div class="mbox" style="width:480px">
+  <div class="mhd">
+    <h3>☁️ 從雲端載入 Excel</h3>
+    <span class="mx" onclick="document.getElementById('gd-modal').classList.remove('on')">✕</span>
+  </div>
+  <div class="mbdy" style="padding:12px">
+    <div id="gd-list"><div class="gd-loading">🔄 載入中，請稍候...</div></div>
+    <div class="gd-open">
+      <a href="https://drive.google.com/drive/folders/1G-rc0VGc5YuHrB0O1kXWwYS1taH_KXDw?usp=sharing" target="_blank">📁 在 Google Drive 開啟資料夾</a>
+    </div>
+  </div>
+</div>
+</div>
+
   <span class="lp-x" onclick="document.getElementById('link-pop').style.display='none'">✕</span>
   <div class="lp-name" id="lp-name"></div>
   <a id="lp-yahoo" href="#" target="_blank">📈 Yahoo 奇摩股市</a>

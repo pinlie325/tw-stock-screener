@@ -73,7 +73,7 @@ td{padding:8px 10px;vertical-align:middle}
 .cd{font-family:monospace;color:#79c0ff;font-weight:700}.lnk{cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 
 .nm{color:#e6edf3;font-weight:500;position:relative}
-.nm[title]:hover::after{content:attr(title);position:fixed;background:#21262d;border:1px solid #444;border-radius:6px;padding:8px 12px;font-size:12px;color:#c9d1d9;max-width:280px;white-space:normal;line-height:1.5;z-index:999;pointer-events:none;margin-top:4px;box-shadow:0 4px 12px #000a}
+.nm[data-tip]:hover::after{content:attr(data-tip);position:fixed;background:#21262d;border:1px solid #444;border-radius:6px;padding:8px 12px;font-size:12px;color:#c9d1d9;max-width:280px;white-space:normal;line-height:1.5;z-index:999;pointer-events:none;margin-top:4px;box-shadow:0 4px 12px #000a}
 
 .up{color:#f85149;font-weight:600}
 .dn{color:#3fb950;font-weight:600}
@@ -197,7 +197,7 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
     </div></div>
     <hr>
     <div class="step"><div class="snum">3</div><div class="stxt"><h4>匯出 Excel</h4><p>報價視窗 → 右鍵 → 匯出 → Excel，存成 .xlsx。建議以日期命名如：<b style="color:#3fb950">20260615.xlsx</b></p></div></div>
-    <div class="step"><div class="snum">4</div><div class="stxt"><h4>載入更新</h4><p>點右上角「📄 載入 Excel」或直接拖拉檔案到網頁即可更新。</p><div class="wrn">⚠️ 「走勢」欄位匯出時為圖表物件，Excel 顯示為 0 屬正常現象。</div></div></div>
+    <div class="step"><div class="snum">4</div><div class="stxt"><h4>載入更新</h4><p>點右上角「📄 載入 Excel」或直接拖拉檔案到網頁即可更新。</p></div></div>
   </div>
 </div>
 </div>
@@ -365,7 +365,7 @@ function render(){
 
 function rRows(data){
   if(!data.length){
-    document.getElementById('tb').innerHTML='<tr><td colspan="9" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
+    document.getElementById('tb').innerHTML='<tr><td colspan="11" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
     return;
   }
   document.getElementById('tb').innerHTML=data.map(function(s){
@@ -378,8 +378,7 @@ function rRows(data){
       var h=hi.indexOf(t)>=0;
       return '<span class="tm'+(h?' hi':'')+'" onclick="event.stopPropagation();addTag(\''+t+'\')">'+t+'</span>';
     }).join('');
-    var pos=s.position.length>30?s.position.substring(0,30)+'…':s.position;
-    return '<tr><td><span class="cd">'+s.code+'</span></td><td><span class="nm">'+s.name+'</span></td>'
+    return '<tr><td><span class="cd lnk" onclick="event.stopPropagation();window.open(\'https://www.cnyes.com/twstock/'+s.code+'\',\'_blank\')">'+s.code+'</span></td><td><span class="nm" data-tip="'+s.position.replace(/"/g,'&quot;')+'">'+s.name+'</span></td>'
       +'<td>'+(s.close!==null?s.close.toFixed(1):'--')+'</td>'
       +'<td><span class="'+pc+'">'+ps+'</span></td>'
       +'<td>'+(s.avg!==null?s.avg.toFixed(1):'--')+'</td>'+'<td>'+(s.volume!==null?s.volume.toLocaleString():'--')+'</td>'+'<td>'+(s.turnover!==null?s.turnover.toFixed(2)+'%':'--')+'</td>'
@@ -419,25 +418,10 @@ function parseXL(file){
       D=nd;
       var m=file.name.match(/(\d{8})/);
       if(m){var d=m[1];document.getElementById('dlbl').textContent=d.substring(0,4)+'/'+d.substring(4,6)+'/'+d.substring(6,8);}
-      var dl=document.getElementById('dlbl');dl.style.color='';dl.style.color='#8b949e';
-document.getElementById('hdr-sub').textContent='產業篩選 · '+D.length+'支股票';
+      var dl=document.getElementById('dlbl');dl.style.color='#8b949e';
+      document.getElementById('hdr-sub').textContent='產業篩選 · '+D.length+'支股票';
+      init();
       selAll();
-function showLink(e, code, name){
-  var pop=document.getElementById('link-pop');
-  document.getElementById('lp-name').textContent=code+' '+name;
-  document.getElementById('lp-yahoo').href='https://tw.stock.yahoo.com/quote/'+code;
-  pop.style.display='block';
-  var x=e.clientX, y=e.clientY;
-  if(x+240>window.innerWidth) x=window.innerWidth-250;
-  if(y+100>window.innerHeight) y=window.innerHeight-110;
-  pop.style.left=x+'px';
-  pop.style.top=y+'px';
-}
-document.addEventListener('click',function(e){
-  if(!e.target.closest('#link-pop')&&!e.target.classList.contains('lnk'))
-    document.getElementById('link-pop').style.display='none';
-});
-init();
       var t=document.getElementById('toast');
       t.textContent='✅ 載入完成！共 '+D.length+' 支股票';
       t.style.display='block';setTimeout(function(){t.style.display='none';},3000);
@@ -451,10 +435,12 @@ function showLink(e, code, name){
   var pop=document.getElementById('link-pop');
   document.getElementById('lp-name').textContent=code+' '+name;
   document.getElementById('lp-yahoo').href='https://tw.stock.yahoo.com/quote/'+code;
+  document.getElementById('lp-cnyes').href='https://www.cnyes.com/twstock/'+code;
+  document.getElementById('lp-good').href='https://goodinfo.tw/tw/StockInfo.asp?STOCK_ID='+code;
   pop.style.display='block';
   var x=e.clientX, y=e.clientY;
   if(x+240>window.innerWidth) x=window.innerWidth-250;
-  if(y+100>window.innerHeight) y=window.innerHeight-110;
+  if(y+150>window.innerHeight) y=window.innerHeight-160;
   pop.style.left=x+'px';
   pop.style.top=y+'px';
 }
@@ -464,7 +450,7 @@ document.addEventListener('click',function(e){
 });
 init();
 if(D.length===0){
-  document.getElementById('tb').innerHTML='<tr><td colspan="8" style="text-align:center;padding:60px 20px;color:#8b949e"><div style="font-size:32px;margin-bottom:12px">📂</div><div style="font-size:15px;color:#c9d1d9;margin-bottom:8px">尚未載入資料</div><div style="font-size:13px">請點右上角「載入 Excel」按鈕匯入 XQ 匯出的股票資料</div></td></tr>';
+  document.getElementById('tb').innerHTML='<tr><td colspan="11" style="text-align:center;padding:60px 20px;color:#8b949e"><div style="font-size:32px;margin-bottom:12px">📂</div><div style="font-size:15px;color:#c9d1d9;margin-bottom:8px">尚未載入資料</div><div style="font-size:13px">請點右上角「載入 Excel」按鈕匯入 XQ 匯出的股票資料</div></td></tr>';
   document.getElementById('sts').innerHTML='';
   document.getElementById('rc').textContent='0';
 } else { render(); }
@@ -474,6 +460,8 @@ if(D.length===0){
   <span class="lp-x" onclick="document.getElementById('link-pop').style.display='none'">✕</span>
   <div class="lp-name" id="lp-name"></div>
   <a id="lp-yahoo" href="#" target="_blank">📈 Yahoo 奇摩股市</a>
+  <a id="lp-cnyes" href="#" target="_blank">📊 鉅亨網</a>
+  <a id="lp-good" href="#" target="_blank">📋 Goodinfo 台灣股市</a>
 </div>
 </body>
 </html>

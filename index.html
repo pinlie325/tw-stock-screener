@@ -70,7 +70,7 @@ th:hover{color:#e6edf3}
 tbody tr{border-bottom:1px solid #1c2333;cursor:pointer}
 tbody tr:hover{background:#161b22}
 td{padding:8px 10px;vertical-align:middle}
-.cd{font-family:monospace;color:#79c0ff;font-weight:700}
+.cd{font-family:monospace;color:#79c0ff;font-weight:700}.lnk{cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 
 .nm{color:#e6edf3;font-weight:500;position:relative}
 .nm[title]:hover::after{content:attr(title);position:fixed;background:#21262d;border:1px solid #444;border-radius:6px;padding:8px 12px;font-size:12px;color:#c9d1d9;max-width:280px;white-space:normal;line-height:1.5;z-index:999;pointer-events:none;margin-top:4px;box-shadow:0 4px 12px #000a}
@@ -113,6 +113,13 @@ td{padding:8px 10px;vertical-align:middle}
 .tip{background:#21262d;border-left:3px solid #58a6ff;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#8b949e;line-height:1.6;margin-top:8px}
 .wrn{background:#2d1f1f;border-left:3px solid #f85149;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#8b949e;line-height:1.6;margin-top:8px}
 hr{border:none;border-top:1px solid #30363d;margin:14px 0}
+
+#link-pop{display:none;position:fixed;z-index:200;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 16px;box-shadow:0 4px 20px #000a;min-width:220px}
+#link-pop a{display:block;color:#58a6ff;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:4px}
+#link-pop a:hover{text-decoration:underline}
+#link-pop .lp-name{font-size:12px;color:#8b949e;margin-bottom:8px}
+#link-pop .lp-x{float:right;cursor:pointer;color:#8b949e;font-size:16px;line-height:1}
+#link-pop .lp-x:hover{color:#e6edf3}
 </style>
 </head>
 <body>
@@ -414,7 +421,23 @@ function parseXL(file){
       if(m){var d=m[1];document.getElementById('dlbl').textContent=d.substring(0,4)+'/'+d.substring(4,6)+'/'+d.substring(6,8);}
       var dl=document.getElementById('dlbl');dl.style.color='';dl.style.color='#8b949e';
 document.getElementById('hdr-sub').textContent='產業篩選 · '+D.length+'支股票';
-      selAll();init();
+      selAll();
+function showLink(e, code, name){
+  var pop=document.getElementById('link-pop');
+  document.getElementById('lp-name').textContent=code+' '+name;
+  document.getElementById('lp-yahoo').href='https://tw.stock.yahoo.com/quote/'+code;
+  pop.style.display='block';
+  var x=e.clientX, y=e.clientY;
+  if(x+240>window.innerWidth) x=window.innerWidth-250;
+  if(y+100>window.innerHeight) y=window.innerHeight-110;
+  pop.style.left=x+'px';
+  pop.style.top=y+'px';
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#link-pop')&&!e.target.classList.contains('lnk'))
+    document.getElementById('link-pop').style.display='none';
+});
+init();
       var t=document.getElementById('toast');
       t.textContent='✅ 載入完成！共 '+D.length+' 支股票';
       t.style.display='block';setTimeout(function(){t.style.display='none';},3000);
@@ -423,6 +446,22 @@ document.getElementById('hdr-sub').textContent='產業篩選 · '+D.length+'支�
   reader.readAsArrayBuffer(file);
 }
 
+
+function showLink(e, code, name){
+  var pop=document.getElementById('link-pop');
+  document.getElementById('lp-name').textContent=code+' '+name;
+  document.getElementById('lp-yahoo').href='https://tw.stock.yahoo.com/quote/'+code;
+  pop.style.display='block';
+  var x=e.clientX, y=e.clientY;
+  if(x+240>window.innerWidth) x=window.innerWidth-250;
+  if(y+100>window.innerHeight) y=window.innerHeight-110;
+  pop.style.left=x+'px';
+  pop.style.top=y+'px';
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#link-pop')&&!e.target.classList.contains('lnk'))
+    document.getElementById('link-pop').style.display='none';
+});
 init();
 if(D.length===0){
   document.getElementById('tb').innerHTML='<tr><td colspan="8" style="text-align:center;padding:60px 20px;color:#8b949e"><div style="font-size:32px;margin-bottom:12px">📂</div><div style="font-size:15px;color:#c9d1d9;margin-bottom:8px">尚未載入資料</div><div style="font-size:13px">請點右上角「載入 Excel」按鈕匯入 XQ 匯出的股票資料</div></td></tr>';
@@ -430,5 +469,11 @@ if(D.length===0){
   document.getElementById('rc').textContent='0';
 } else { render(); }
 </script>
+
+<div id="link-pop">
+  <span class="lp-x" onclick="document.getElementById('link-pop').style.display='none'">✕</span>
+  <div class="lp-name" id="lp-name"></div>
+  <a id="lp-yahoo" href="#" target="_blank">📈 Yahoo 奇摩股市</a>
+</div>
 </body>
 </html>

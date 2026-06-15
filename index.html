@@ -150,7 +150,7 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <option value="pct|a">跌幅 ↓</option>
         <option value="close|d">股價高→低</option>
         <option value="close|a">股價低→高</option>
-        <option value="capital|a">股本小→大</option>
+        <option value="capital|a">股本小→大</option><option value="volume|d">成交量大→小</option><option value="turnover|d">換手率高→低</option>
         <option value="margin|a">融資維持低→高</option>
       </select>
       <button class="clr" onclick="selAll()">✕ 清除</button>
@@ -158,7 +158,7 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
     <div class="tw">
       <table>
         <thead><tr>
-          <th style="width:52px" onclick="srt('code')">代碼</th><th style="width:72px" onclick="srt('name')">名稱</th><th style="width:58px" onclick="srt('close')">昨收</th><th style="width:68px" onclick="srt('pct')">漲幅%</th><th style="width:58px" onclick="srt('avg')">均價</th><th style="width:68px" onclick="srt('capital')">股本(億)</th><th style="width:76px" onclick="srt('margin')">融資維持%</th><th>產業標籤 / 產業地位</th>
+          <th style="width:52px" onclick="srt('code')">代碼</th><th style="width:72px" onclick="srt('name')">名稱</th><th style="width:58px" onclick="srt('close')">昨收</th><th style="width:68px" onclick="srt('pct')">漲幅%</th><th style="width:58px" onclick="srt('avg')">均價</th><th style="width:68px" onclick="srt('volume')">成交</th><th style="width:68px" onclick="srt('turnover')">換手率%</th><th style="width:68px" onclick="srt('capital')">股本(億)</th><th style="width:76px" onclick="srt('margin')">融資維持%</th><th>產業標籤 / 產業地位</th>
         </tr></thead>
         <tbody id="tb"></tbody>
       </table>
@@ -182,9 +182,9 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <tr><td>009</td><td>細產業</td><td>產業標籤，篩選核心欄位</td><td class="req">✔ 必要</td></tr>
         <tr><td>010</td><td>均價</td><td>均價（技術分析用）</td><td class="req">✔ 必要</td></tr>
         <tr><td>011</td><td>漲幅%</td><td>當日漲跌幅</td><td class="req">✔ 必要</td></tr>
-        <tr><td>012</td><td>走勢</td><td>走勢圖</td><td class="opt">選填</td></tr>
-        <tr><td>013</td><td>股本</td><td>公司股本（億）</td><td class="req">✔ 必要</td></tr>
-        <tr><td>014</td><td>產業地位</td><td>公司在產業中的定位</td><td class="req">✔ 必要</td></tr>
+        <tr><td>012</td><td>成交</td><td>當日成交量</td><td class="req">✔ 必要</td></tr><tr><td>013</td><td>換手率%</td><td>當日換手率</td><td class="req">✔ 必要</td></tr>
+        <tr><td>015</td><td>股本</td><td>公司股本（億）</td><td class="req">✔ 必要</td></tr>
+        <tr><td>016</td><td>產業地位</td><td>公司在產業中的定位</td><td class="req">✔ 必要</td></tr>
       </tbody></table>
       <div class="tip">💡 欄位順序不影響匯入，系統自動比對欄位名稱。</div>
     </div></div>
@@ -375,7 +375,7 @@ function rRows(data){
     return '<tr><td><span class="cd">'+s.code+'</span></td><td><span class="nm">'+s.name+'</span></td>'
       +'<td>'+(s.close!==null?s.close.toFixed(1):'--')+'</td>'
       +'<td><span class="'+pc+'">'+ps+'</span></td>'
-      +'<td>'+(s.avg!==null?s.avg.toFixed(1):'--')+'</td>'
+      +'<td>'+(s.avg!==null?s.avg.toFixed(1):'--')+'</td>'+'<td>'+(s.volume!==null?s.volume.toLocaleString():'--')+'</td>'+'<td>'+(s.turnover!==null?s.turnover.toFixed(2)+'%':'--')+'</td>'
       +'<td class="gr">'+(s.capital!==null?s.capital.toFixed(1):'--')+'</td>'
       +'<td class="'+mc+'">'+(s.margin!==null?s.margin.toFixed(1):'--')+'</td>'
       +'<td><div class="tgs">'+chips+'</div><div class="pos">'+s.position+'</div></td>'
@@ -400,13 +400,13 @@ function parseXL(file){
       if(!rows.length){alert('讀取失敗');return;}
       var keys=Object.keys(rows[0]);
       function fc(arr){for(var i=0;i<arr.length;i++)for(var j=0;j<keys.length;j++)if(keys[j].indexOf(arr[i])>=0)return keys[j];return null;}
-      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位'])};
+      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位'])};
       function sf(v){if(v===null||v===undefined||v===''||v==='--')return null;var n=parseFloat(v);return isNaN(n)?null:n;}
       var nd=[];
       rows.forEach(function(r){
         if(!COL.code||!r[COL.code])return;
         var ts=COL.ind&&r[COL.ind]?String(r[COL.ind]).split(',').map(function(t){return t.trim();}).filter(function(t){return t&&t!=='null';}):[]; 
-        nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts});
+        nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts});
       });
       if(!nd.length){alert('沒有讀到有效資料');return;}
       D=nd;

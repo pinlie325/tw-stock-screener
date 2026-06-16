@@ -183,14 +183,13 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <option value="capital|a">股本小→大</option><option value="turnval|d">成交值大→小</option><option value="volume|d">成交量大→小</option><option value="turnover|d">換手率高→低</option>
         <option value="margin|a">融資維持低→高</option>
         <option value="rs|d">RS% 高→低</option>
-        <option value="rsl|d">RSL 高→低</option>
       </select>
       <button class="clr" onclick="selAll()">✕ 清除</button>
     </div>
     <div class="tw" id="tw">
       <table>
         <thead><tr>
-          <th style="width:44px" onclick="srt('code')">代碼</th><th style="width:52px" onclick="srt('name')">名稱</th><th style="width:44px" onclick="srt('close')">昨收</th><th style="width:48px" onclick="srt('pct')">漲幅<br>%</th><th style="width:44px" onclick="srt('avg')">均價</th><th style="width:52px" onclick="srt('volume')">成交</th><th style="width:48px" onclick="srt('turnover')">換手率<br>%</th><th style="width:52px" onclick="srt('capital')">股本<br>(億)</th><th style="width:56px" onclick="srt('turnval')">成交值</th><th style="width:48px" onclick="srt('margin')">融資<br>維持率%</th><th style="width:44px" onclick="srt('rs')">RS%</th><th style="width:44px" onclick="srt('rsl')">RSL</th>
+          <th style="width:44px" onclick="srt('code')">代碼</th><th style="width:52px" onclick="srt('name')">名稱</th><th style="width:44px" onclick="srt('close')">昨收</th><th style="width:48px" onclick="srt('pct')">漲幅<br>%</th><th style="width:44px" onclick="srt('avg')">均價</th><th style="width:52px" onclick="srt('volume')">成交</th><th style="width:48px" onclick="srt('turnover')">換手率<br>%</th><th style="width:52px" onclick="srt('capital')">股本<br>(億)</th><th style="width:56px" onclick="srt('turnval')">成交值</th><th style="width:48px" onclick="srt('margin')">融資<br>維持率%</th><th style="width:44px" onclick="srt('rs')">RS%</th>
         </tr></thead>
         <tbody id="tb"></tbody>
       </table>
@@ -219,7 +218,6 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <tr><td>細產業</td><td>產業標籤，供左側分類篩選使用，同一股票可含多個標籤</td></tr>
         <tr><td>產業地位</td><td>公司在供應鏈中的角色定位，移至股票名稱可顯示完整說明</td></tr>
         <tr><td>RS%</td><td>相對強弱百分位（0–100）。數值越高代表近期表現優於越多個股。≥80 紅色強勢、≥50 黃色中性、&lt;50 灰色偏弱</td></tr>
-        <tr><td>RSL</td><td>RS 趨勢線。持續上升代表相對強弱仍在改善；搭配 RS% 使用，RSL 上升且 RS% 高者為強勢族群</td></tr>
       </tbody></table>
       <div class="tip">💡 欄位順序不影響匯入，系統自動比對欄位名稱。</div>
     </div></div>
@@ -414,7 +412,7 @@ function render(){
 
 function rRows(data){
   if(!data.length){
-    document.getElementById('tb').innerHTML='<tr><td colspan="12" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
+    document.getElementById('tb').innerHTML='<tr><td colspan="11" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
     return;
   }
   document.getElementById('tb').innerHTML=data.map(function(s){
@@ -439,10 +437,9 @@ function rRows(data){
       +'<td class="gr">'+(s.turnval!==null?s.turnval.toLocaleString():'--')+'</td>'
       +'<td class="'+mc+'">'+(s.margin!==null?s.margin.toFixed(1):'--')+'</td>'
       +'<td style="color:'+(s.rs!==null?(s.rs>=80?'#f85149':s.rs>=50?'#d29922':'#8b949e'):'#8b949e')+';font-weight:600">'+(s.rs!==null?s.rs.toFixed(1):'--')+'</td>'
-      +'<td style="color:'+(s.rsl!==null?(s.rsl>=80?'#f85149':s.rsl>=50?'#d29922':'#8b949e'):'#8b949e')+';font-weight:600">'+(s.rsl!==null?s.rsl.toFixed(1):'--')+'</td>'
       +'</tr>'
       +'<tr style="border-bottom:1px solid #21262d">'
-      +'<td colspan="12" style="padding:2px 10px 5px 10px">'
+      +'<td colspan="11" style="padding:2px 10px 5px 10px">'
       +(s.position?'<span class="pos" style="display:inline;margin-right:10px">'+s.position+'</span>':'')
       +'<span style="display:inline-flex;flex-wrap:wrap;gap:3px">'+chips+'</span>'
       +'</td></tr>';

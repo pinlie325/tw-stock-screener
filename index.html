@@ -210,18 +210,18 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <tr><td>代碼</td><td>股票代號，系統識別用</td></tr>
         <tr><td>商品</td><td>股票名稱</td></tr>
         <tr><td>昨收</td><td>前一日收盤價，作為漲跌幅基準</td></tr>
-        <tr><td>漲幅%</td><td>當日漲跌幅。正值紅色、負值綠色，預設依此排序</td></tr>
-        <tr><td>均價</td><td>當日成交均價。高於昨收代表買盤積極，低於昨收代表賣壓沉重</td></tr>
-        <tr><td>成交</td><td>當日成交量（張）。量能異常放大通常代表主力介入或消息面刺激</td></tr>
-        <tr><td>換手率%</td><td>當日換手率。短期高換手（>5%）代表籌碼流動劇烈，需留意方向</td></tr>
-        <tr><td>股本</td><td>公司股本（億元）。股本越小越容易被控盤，波動幅度也相對較大</td></tr>
-        <tr><td>成交值</td><td>當日成交金額（元）。反映實際資金流入規模，比量更能比較不同價位股票</td></tr>
         <tr><td>融資維持率%</td><td>融資戶目前維持率。低於 160% 需注意追繳風險；低於 130% 有強制斷頭疑慮</td></tr>
-        <tr><td>細產業</td><td>產業標籤，供左側分類篩選使用，同一股票可含多個標籤</td></tr>
+        <tr><td>所有細產業</td><td>產業標籤，供左側分類篩選使用，同一股票可含多個標籤</td></tr>
+        <tr><td>成交</td><td>當日成交量（張）。量能異常放大通常代表主力介入或消息面刺激</td></tr>
+        <tr><td>均價</td><td>當日成交均價。高於昨收代表買盤積極，低於昨收代表賣壓沉重</td></tr>
+        <tr><td>漲幅%</td><td>當日漲跌幅。正值紅色、負值綠色，預設依此排序</td></tr>
+        <tr><td>股本</td><td>公司股本（億元）。股本越小越容易被控盤，波動幅度也相對較大</td></tr>
         <tr><td>產業地位</td><td>公司在供應鏈中的角色定位，移至股票名稱可顯示完整說明</td></tr>
+        <tr><td>換手率%</td><td>當日換手率。短期高換手（>5%）代表籌碼流動劇烈，需留意方向</td></tr>
+        <tr><td>成交值</td><td>當日成交金額（元）。反映實際資金流入規模，比量更能比較不同價位股票</td></tr>
+        <tr><td>盈餘(單)</td><td>單季每股盈餘（EPS）。正值紅色、負值綠色。連續成長代表獲利動能強勁，虧損季需留意基本面是否惡化</td></tr>
         <tr><td>RS%</td><td>相對強弱百分位（0–100）。數值越高代表近期表現優於越多個股。≥80 紅色強勢、≥50 黃色中性、&lt;50 灰色偏弱</td></tr>
         <tr><td>毛利率%</td><td>最近一季毛利率。≥40% 綠色（高毛利）、≥20% 黃色（中等）、&lt;20% 灰色（偏低）。毛利率高代表產品競爭力強、定價能力佳</td></tr>
-        <tr><td>盈餘(單)</td><td>單季每股盈餘（EPS）。正值紅色、負值綠色。連續成長代表獲利動能強勁，虧損季需留意基本面是否惡化</td></tr>
       </tbody></table>
       <div class="tip">💡 欄位順序不影響匯入，系統自動比對欄位名稱。</div>
     </div></div>
@@ -473,7 +473,7 @@ function parseXL(file){
       if(!rows.length){alert('讀取失敗');return;}
       var keys=Object.keys(rows[0]);
       function fc(arr){for(var i=0;i<arr.length;i++)for(var j=0;j<keys.length;j++)if(keys[j].indexOf(arr[i])>=0)return keys[j];return null;}
-      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),grossmargin:fc(['毛利率']),eps:fc(['盈餘(單)','單季','EPS'])};
+      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['所有細產業','細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),grossmargin:fc(['毛利率']),eps:fc(['盈餘(單)','單季','EPS'])};
       function sf(v){if(v===null||v===undefined||v===''||v==='--')return null;var n=parseFloat(v);return isNaN(n)?null:n;}
       var nd=[];
       rows.forEach(function(r){

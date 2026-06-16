@@ -7,117 +7,117 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:#0d1117;color:#e6edf3;height:100vh;display:flex;flex-direction:column}
-.hdr{background:#161b22;border-bottom:1px solid #30363d;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.hdr-t{font-size:17px;font-weight:700;color:#58a6ff}
-.hdr-s{font-size:12px;color:#8b949e}
+body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:#0d1117;color:#e6edf3;height:100vh;display:flex;flex-direction:column;font-size:15px}
+.hdr{background:#161b22;border-bottom:1px solid #30363d;padding:11px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.hdr-t{font-size:19px;font-weight:700;color:#58a6ff}
+.hdr-s{font-size:14px;color:#8b949e}
 .hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px}
-.bdg{background:#21262d;border:1px solid #30363d;border-radius:5px;padding:3px 10px;font-size:12px;color:#8b949e}
-.btn-g{background:#238636;border:none;border-radius:5px;padding:5px 12px;font-size:13px;color:#fff;cursor:pointer}
+.bdg{background:#21262d;border:1px solid #30363d;border-radius:5px;padding:3px 10px;font-size:13px;color:#8b949e}
+.btn-g{background:#238636;border:none;border-radius:5px;padding:6px 14px;font-size:14px;color:#fff;cursor:pointer}
 .btn-g:hover{background:#2ea043}
-.btn-o{background:none;border:1px solid #30363d;border-radius:5px;padding:5px 12px;font-size:13px;color:#8b949e;cursor:pointer}
+.btn-o{background:none;border:1px solid #30363d;border-radius:5px;padding:6px 14px;font-size:14px;color:#8b949e;cursor:pointer}
 .btn-o:hover{border-color:#58a6ff;color:#58a6ff}
 .lay{display:flex;flex:1;min-height:0}
 /* SIDEBAR */
-.sb{width:200px;min-width:200px;background:#161b22;border-right:1px solid #30363d;display:flex;flex-direction:column;min-height:0}
+.sb{width:210px;min-width:210px;background:#161b22;border-right:1px solid #30363d;display:flex;flex-direction:column;min-height:0}
 .sb-sec{padding:10px;border-bottom:1px solid #30363d;flex-shrink:0;position:relative}
-.sb-lbl{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.sb-inp{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:5px;padding:6px 8px;color:#e6edf3;font-size:13px;outline:none}
+.sb-lbl{font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.sb-inp{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:5px;padding:7px 9px;color:#e6edf3;font-size:14px;outline:none}
 .sb-inp:focus{border-color:#58a6ff}
 .s-drop{display:none;position:absolute;left:10px;right:10px;top:calc(100% - 4px);z-index:100;background:#161b22;border:1px solid #30363d;border-radius:6px;max-height:240px;overflow-y:auto;box-shadow:0 4px 20px #000b}
 .s-drop.on{display:block}
-.sd-r{padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid #21262d}
+.sd-r{padding:9px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid #21262d}
 .sd-r:last-child{border:none}
 .sd-r:hover{background:#21262d}
-.sd-cd{font-family:monospace;font-weight:700;color:#79c0ff;font-size:13px;width:42px;flex-shrink:0}
-.sd-nm{color:#e6edf3;font-size:13px;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.sd-pc{font-size:12px;font-weight:600;flex-shrink:0}
-.sd-nil{padding:12px;text-align:center;color:#8b949e;font-size:13px}
+.sd-cd{font-family:monospace;font-weight:700;color:#79c0ff;font-size:14px;width:44px;flex-shrink:0}
+.sd-nm{color:#e6edf3;font-size:14px;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sd-pc{font-size:13px;font-weight:600;flex-shrink:0}
+.sd-nil{padding:12px;text-align:center;color:#8b949e;font-size:14px}
 .sb-cat{padding:10px;border-bottom:1px solid #30363d;flex-shrink:0}
 .sb-scr{flex:1;overflow-y:auto;padding:5px;min-height:0}
 .sb-scr::-webkit-scrollbar{width:3px}
 .sb-scr::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
 .cg{margin-bottom:2px}
 .cat-bar{padding:0 8px 4px 8px}
-.cb{display:flex;width:100%;background:none;border:none;color:#c9d1d9;font-size:13px;padding:7px 8px;cursor:pointer;border-radius:5px;justify-content:space-between;align-items:center;text-align:left}
+.cb{display:flex;width:100%;background:none;border:none;color:#c9d1d9;font-size:14px;padding:8px 8px;cursor:pointer;border-radius:5px;justify-content:space-between;align-items:center;text-align:left}
 .cb:hover{background:#21262d}
 .cb.on{background:#1f6feb22;color:#58a6ff;border-left:2px solid #58a6ff}
-.cb .n{background:#21262d;border-radius:8px;padding:1px 6px;font-size:11px;color:#8b949e;flex-shrink:0}
+.cb .n{background:#21262d;border-radius:8px;padding:1px 6px;font-size:12px;color:#8b949e;flex-shrink:0}
 .cb.on .n{background:#1f6feb44;color:#79c0ff}
 .tb{display:none;flex-wrap:wrap;gap:3px;padding:3px 5px 6px 14px}
 .tb.on{display:flex}
-.tc{background:#21262d;border:1px solid #30363d;border-radius:3px;padding:2px 6px;font-size:11px;color:#8b949e;cursor:pointer;white-space:nowrap}
+.tc{background:#21262d;border:1px solid #30363d;border-radius:3px;padding:2px 7px;font-size:12px;color:#8b949e;cursor:pointer;white-space:nowrap}
 .tc:hover{border-color:#58a6ff;color:#58a6ff}
 .tc.on{background:#1f6feb22;border-color:#58a6ff;color:#58a6ff}
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0}
-.tb2{padding:8px 12px;border-bottom:1px solid #30363d;background:#161b22;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
-.ti{font-size:13px;color:#8b949e;white-space:nowrap}
+.tb2{padding:9px 14px;border-bottom:1px solid #30363d;background:#161b22;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.ti{font-size:14px;color:#8b949e;white-space:nowrap}
 .ti b{color:#58a6ff}
 .at{display:flex;flex-wrap:wrap;gap:4px;flex:1}
-.atag{display:inline-flex;align-items:center;gap:3px;background:#1f6feb22;border:1px solid #1f6feb;border-radius:3px;padding:2px 7px;font-size:11px;color:#58a6ff}
+.atag{display:inline-flex;align-items:center;gap:3px;background:#1f6feb22;border:1px solid #1f6feb;border-radius:3px;padding:2px 8px;font-size:12px;color:#58a6ff}
 .ax{cursor:pointer;color:#8b949e}
 .ax:hover{color:#f85149}
-.ss{background:#21262d;border:1px solid #30363d;border-radius:5px;padding:4px 8px;font-size:12px;color:#c9d1d9;outline:none;cursor:pointer}
-.clr{background:none;border:1px solid #30363d;border-radius:5px;padding:4px 10px;font-size:12px;color:#8b949e;cursor:pointer}
+.ss{background:#21262d;border:1px solid #30363d;border-radius:5px;padding:5px 9px;font-size:13px;color:#c9d1d9;outline:none;cursor:pointer}
+.clr{background:none;border:1px solid #30363d;border-radius:5px;padding:5px 11px;font-size:13px;color:#8b949e;cursor:pointer}
 .clr:hover{border-color:#f85149;color:#f85149}
 .tw{flex:1;overflow:auto;min-height:0}
 .tw::-webkit-scrollbar{width:5px;height:5px}
 .tw::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px}
-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+table{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed}
 thead{position:sticky;top:0;z-index:5}
-th{background:#161b22;color:#8b949e;padding:6px 4px;text-align:center;border-bottom:1px solid #30363d;font-size:12px;white-space:normal;cursor:pointer;user-select:none;line-height:1.4}
+th{background:#161b22;color:#8b949e;padding:7px 4px;text-align:center;border-bottom:1px solid #30363d;font-size:13px;white-space:normal;cursor:pointer;user-select:none;line-height:1.4}
 th:hover{color:#e6edf3}
 tbody tr{border-bottom:1px solid #1c2333;cursor:pointer}
 tbody tr:hover{background:#161b22}
-td{padding:5px 6px;vertical-align:middle}
+td{padding:6px 7px;vertical-align:middle}
 .cd{font-family:monospace;color:#79c0ff;font-weight:700}.lnk{cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 
 .nm{color:#e6edf3;font-weight:500;position:relative}
-.nm[data-tip]:hover::after{content:attr(data-tip);position:fixed;background:#21262d;border:1px solid #444;border-radius:6px;padding:8px 12px;font-size:12px;color:#c9d1d9;max-width:280px;white-space:normal;line-height:1.5;z-index:999;pointer-events:none;margin-top:4px;box-shadow:0 4px 12px #000a}
+.nm[data-tip]:hover::after{content:attr(data-tip);position:fixed;background:#21262d;border:1px solid #444;border-radius:6px;padding:8px 12px;font-size:13px;color:#c9d1d9;max-width:280px;white-space:normal;line-height:1.5;z-index:999;pointer-events:none;margin-top:4px;box-shadow:0 4px 12px #000a}
 
 .up{color:#f85149;font-weight:600}
 .dn{color:#3fb950;font-weight:600}
 .fl{color:#8b949e}
-.gr{color:#8b949e;font-size:12px}
-.mlo{color:#f85149;font-size:12px}
-.mok{color:#3fb950;font-size:12px}
+.gr{color:#8b949e;font-size:13px}
+.mlo{color:#f85149;font-size:13px}
+.mok{color:#3fb950;font-size:13px}
 .tgs{display:flex;flex-wrap:wrap;gap:3px}
 .tm{background:#21262d;border-radius:3px;padding:3px 8px;font-size:12px;color:#8b949e;cursor:pointer;white-space:nowrap}
 .tm:hover{color:#58a6ff}
 .tm.hi{background:#1f6feb22;color:#58a6ff}
-.pos{font-size:11px;color:#6e7681;margin-top:5px;line-height:1.5;word-break:break-word}
+.pos{font-size:12px;color:#6e7681;margin-top:5px;line-height:1.5;word-break:break-word}
 .pbar{display:flex;height:3px;border-radius:2px;overflow:hidden;margin-top:4px;gap:1px}
 .pbar-u{background:#f85149}
 .pbar-d{background:#3fb950}
 .pbar-f{background:#30363d}
-.pct-txt{font-size:10px;color:#8b949e;margin-top:2px;display:flex;gap:4px;line-height:1}
+.pct-txt{font-size:11px;color:#8b949e;margin-top:2px;display:flex;gap:4px;line-height:1}
 .pct-u{color:#f85149}.pct-d{color:#3fb950}
-.sts{padding:5px 12px;background:#0d1117;border-top:1px solid #21262d;display:flex;gap:14px;flex-shrink:0}
-.si{font-size:11px;color:#8b949e}
+.sts{padding:6px 14px;background:#0d1117;border-top:1px solid #21262d;display:flex;gap:14px;flex-shrink:0}
+.si{font-size:12px;color:#8b949e}
 .si b{color:#c9d1d9;margin-left:3px}
 .su{color:#f85149}.sd2{color:#3fb950}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#238636;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;display:none;z-index:500}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#238636;color:#fff;padding:10px 20px;border-radius:8px;font-size:15px;display:none;z-index:500}
 .mbg{display:none;position:fixed;inset:0;background:#00000088;z-index:400;align-items:center;justify-content:center}
 .mbg.on{display:flex}
 .mbox{background:#161b22;border:1px solid #30363d;border-radius:12px;width:520px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px #000a}
 .mbox::-webkit-scrollbar{width:4px}
 .mbox::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
 .mhd{padding:14px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#161b22}
-.mhd h3{font-size:15px;font-weight:700;color:#e6edf3}
+.mhd h3{font-size:16px;font-weight:700;color:#e6edf3}
 .mx{cursor:pointer;color:#8b949e;font-size:18px}
 .mx:hover{color:#e6edf3}
 .mbdy{padding:18px}
 .step{display:flex;gap:12px;margin-bottom:18px}
-.snum{width:26px;height:26px;background:#1f6feb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px}
-.stxt h4{font-size:14px;font-weight:600;color:#e6edf3;margin-bottom:5px}
-.stxt p{font-size:13px;color:#8b949e;line-height:1.6;margin-bottom:5px}
-.ct{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
-.ct th{background:#21262d;color:#8b949e;padding:5px 8px;text-align:left;border-bottom:1px solid #30363d}
-.ct td{padding:5px 8px;border-bottom:1px solid #21262d;color:#c9d1d9}
+.snum{width:26px;height:26px;background:#1f6feb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px}
+.stxt h4{font-size:15px;font-weight:600;color:#e6edf3;margin-bottom:5px}
+.stxt p{font-size:14px;color:#8b949e;line-height:1.6;margin-bottom:5px}
+.ct{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+.ct th{background:#21262d;color:#8b949e;padding:6px 8px;text-align:left;border-bottom:1px solid #30363d}
+.ct td{padding:6px 8px;border-bottom:1px solid #21262d;color:#c9d1d9}
 .ct td:first-child{font-family:monospace;color:#79c0ff;font-weight:700}
 .req{color:#3fb950}.opt{color:#8b949e}
-.tip{background:#21262d;border-left:3px solid #58a6ff;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#8b949e;line-height:1.6;margin-top:8px}
+.tip{background:#21262d;border-left:3px solid #58a6ff;border-radius:0 6px 6px 0;padding:8px 12px;font-size:13px;color:#8b949e;line-height:1.6;margin-top:8px}
 .wrn{background:#2d1f1f;border-left:3px solid #f85149;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#8b949e;line-height:1.6;margin-top:8px}
 hr{border:none;border-top:1px solid #30363d;margin:14px 0}
 
@@ -182,13 +182,15 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <option value="close|a">股價低→高</option>
         <option value="capital|a">股本小→大</option><option value="turnval|d">成交值大→小</option><option value="volume|d">成交量大→小</option><option value="turnover|d">換手率高→低</option>
         <option value="margin|a">融資維持低→高</option>
+        <option value="rs|d">RS% 高→低</option>
+        <option value="rsl|d">RSL 高→低</option>
       </select>
       <button class="clr" onclick="selAll()">✕ 清除</button>
     </div>
     <div class="tw" id="tw">
       <table>
         <thead><tr>
-          <th style="width:44px" onclick="srt('code')">代碼</th><th style="width:52px" onclick="srt('name')">名稱</th><th style="width:44px" onclick="srt('close')">昨收</th><th style="width:48px" onclick="srt('pct')">漲幅<br>%</th><th style="width:44px" onclick="srt('avg')">均價</th><th style="width:52px" onclick="srt('volume')">成交</th><th style="width:48px" onclick="srt('turnover')">換手率<br>%</th><th style="width:52px" onclick="srt('capital')">股本<br>(億)</th><th style="width:56px" onclick="srt('turnval')">成交值</th><th style="width:48px" onclick="srt('margin')">融資<br>維持率%</th>
+          <th style="width:44px" onclick="srt('code')">代碼</th><th style="width:52px" onclick="srt('name')">名稱</th><th style="width:44px" onclick="srt('close')">昨收</th><th style="width:48px" onclick="srt('pct')">漲幅<br>%</th><th style="width:44px" onclick="srt('avg')">均價</th><th style="width:52px" onclick="srt('volume')">成交</th><th style="width:48px" onclick="srt('turnover')">換手率<br>%</th><th style="width:52px" onclick="srt('capital')">股本<br>(億)</th><th style="width:56px" onclick="srt('turnval')">成交值</th><th style="width:48px" onclick="srt('margin')">融資<br>維持率%</th><th style="width:44px" onclick="srt('rs')">RS%</th><th style="width:44px" onclick="srt('rsl')">RSL</th>
         </tr></thead>
         <tbody id="tb"></tbody>
       </table>
@@ -203,18 +205,21 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
   <div class="mbdy">
     <div class="step"><div class="snum">1</div><div class="stxt"><h4>開啟 XQ 報價欄位設定</h4><p>XQ 報價視窗 → 右鍵 → 欄位設定，或上方選單 → 工具 → 報價欄位。</p></div></div>
     <div class="step"><div class="snum">2</div><div class="stxt"><h4>加入以下欄位</h4>
-      <table class="ct"><thead><tr><th>編號</th><th>欄位名稱</th><th>用途</th><th>必要</th></tr></thead><tbody>
-        <tr><td>001</td><td>代碼</td><td>股票代號</td><td class="req">✔ 必要</td></tr>
-        <tr><td>002</td><td>商品</td><td>股票名稱</td><td class="req">✔ 必要</td></tr>
-        <tr><td>003</td><td>昨收</td><td>前一日收盤價</td><td class="req">✔ 必要</td></tr>
-        <tr><td>004</td><td>融資維持率%</td><td>融資安全性指標</td><td class="req">✔ 必要</td></tr>
-        <tr><td>005-008</td><td>開盤/最高/最低/昨量</td><td>價量資訊</td><td class="opt">選填</td></tr>
-        <tr><td>009</td><td>細產業</td><td>產業標籤，篩選核心欄位</td><td class="req">✔ 必要</td></tr>
-        <tr><td>010</td><td>均價</td><td>均價（技術分析用）</td><td class="req">✔ 必要</td></tr>
-        <tr><td>011</td><td>漲幅%</td><td>當日漲跌幅</td><td class="req">✔ 必要</td></tr>
-        <tr><td>012</td><td>成交</td><td>當日成交量</td><td class="req">✔ 必要</td></tr><tr><td>013</td><td>換手率%</td><td>當日換手率</td><td class="req">✔ 必要</td></tr>
-        <tr><td>015</td><td>股本</td><td>公司股本（億）</td><td class="req">✔ 必要</td></tr><tr><td>016</td><td>成交值</td><td>當日成交金額</td><td class="req">✔ 必要</td></tr>
-        <tr><td>017</td><td>產業地位</td><td>公司在產業中的定位</td><td class="req">✔ 必要</td></tr>
+      <table class="ct"><thead><tr><th style="width:90px">欄位名稱</th><th>數值說明</th></tr></thead><tbody>
+        <tr><td>代碼</td><td>股票代號，系統識別用</td></tr>
+        <tr><td>商品</td><td>股票名稱</td></tr>
+        <tr><td>昨收</td><td>前一日收盤價，作為漲跌幅基準</td></tr>
+        <tr><td>漲幅%</td><td>當日漲跌幅。正值紅色、負值綠色，預設依此排序</td></tr>
+        <tr><td>均價</td><td>當日成交均價。高於昨收代表買盤積極，低於昨收代表賣壓沉重</td></tr>
+        <tr><td>成交</td><td>當日成交量（張）。量能異常放大通常代表主力介入或消息面刺激</td></tr>
+        <tr><td>換手率%</td><td>當日換手率。短期高換手（>5%）代表籌碼流動劇烈，需留意方向</td></tr>
+        <tr><td>股本</td><td>公司股本（億元）。股本越小越容易被控盤，波動幅度也相對較大</td></tr>
+        <tr><td>成交值</td><td>當日成交金額（元）。反映實際資金流入規模，比量更能比較不同價位股票</td></tr>
+        <tr><td>融資維持率%</td><td>融資戶目前維持率。低於 160% 需注意追繳風險；低於 130% 有強制斷頭疑慮</td></tr>
+        <tr><td>細產業</td><td>產業標籤，供左側分類篩選使用，同一股票可含多個標籤</td></tr>
+        <tr><td>產業地位</td><td>公司在供應鏈中的角色定位，移至股票名稱可顯示完整說明</td></tr>
+        <tr><td>RS%</td><td>相對強弱百分位（0–100）。數值越高代表近期表現優於越多個股。≥80 紅色強勢、≥50 黃色中性、&lt;50 灰色偏弱</td></tr>
+        <tr><td>RSL</td><td>RS 趨勢線。持續上升代表相對強弱仍在改善；搭配 RS% 使用，RSL 上升且 RS% 高者為強勢族群</td></tr>
       </tbody></table>
       <div class="tip">💡 欄位順序不影響匯入，系統自動比對欄位名稱。</div>
     </div></div>
@@ -409,7 +414,7 @@ function render(){
 
 function rRows(data){
   if(!data.length){
-    document.getElementById('tb').innerHTML='<tr><td colspan="10" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
+    document.getElementById('tb').innerHTML='<tr><td colspan="12" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
     return;
   }
   document.getElementById('tb').innerHTML=data.map(function(s){
@@ -433,9 +438,11 @@ function rRows(data){
       +'<td class="gr">'+(s.capital!==null?s.capital.toFixed(1):'--')+'</td>'
       +'<td class="gr">'+(s.turnval!==null?s.turnval.toLocaleString():'--')+'</td>'
       +'<td class="'+mc+'">'+(s.margin!==null?s.margin.toFixed(1):'--')+'</td>'
+      +'<td style="color:'+(s.rs!==null?(s.rs>=80?'#f85149':s.rs>=50?'#d29922':'#8b949e'):'#8b949e')+';font-weight:600">'+(s.rs!==null?s.rs.toFixed(1):'--')+'</td>'
+      +'<td style="color:'+(s.rsl!==null?(s.rsl>=80?'#f85149':s.rsl>=50?'#d29922':'#8b949e'):'#8b949e')+';font-weight:600">'+(s.rsl!==null?s.rsl.toFixed(1):'--')+'</td>'
       +'</tr>'
       +'<tr style="border-bottom:1px solid #21262d">'
-      +'<td colspan="10" style="padding:2px 10px 5px 10px">'
+      +'<td colspan="12" style="padding:2px 10px 5px 10px">'
       +(s.position?'<span class="pos" style="display:inline;margin-right:10px">'+s.position+'</span>':'')
       +'<span style="display:inline-flex;flex-wrap:wrap;gap:3px">'+chips+'</span>'
       +'</td></tr>';
@@ -463,13 +470,13 @@ function parseXL(file){
       if(!rows.length){alert('讀取失敗');return;}
       var keys=Object.keys(rows[0]);
       function fc(arr){for(var i=0;i<arr.length;i++)for(var j=0;j<keys.length;j++)if(keys[j].indexOf(arr[i])>=0)return keys[j];return null;}
-      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位'])};
+      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),rsl:fc(['RSL'])};
       function sf(v){if(v===null||v===undefined||v===''||v==='--')return null;var n=parseFloat(v);return isNaN(n)?null:n;}
       var nd=[];
       rows.forEach(function(r){
         if(!COL.code||!r[COL.code])return;
         var ts=COL.ind&&r[COL.ind]?String(r[COL.ind]).split(',').map(function(t){return t.trim();}).filter(function(t){return t&&t!=='null';}):[]; 
-        nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts});
+        nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts,rs:COL.rs?sf(r[COL.rs]):null,rsl:COL.rsl?sf(r[COL.rsl]):null});
       });
       if(!nd.length){alert('沒有讀到有效資料');return;}
       D=nd;
@@ -621,13 +628,13 @@ function parseXLFromBuffer(buf,filename){
     if(!rows.length){alert('讀取失敗');return;}
     var keys=Object.keys(rows[0]);
     function fc(arr){for(var i=0;i<arr.length;i++)for(var j=0;j<keys.length;j++)if(keys[j].indexOf(arr[i])>=0)return keys[j];return null;}
-    var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位'])};
+    var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),rsl:fc(['RSL'])};
     function sf(v){if(v===null||v===undefined||v===''||v==='--')return null;var n=parseFloat(v);return isNaN(n)?null:n;}
     var nd=[];
     rows.forEach(function(r){
       if(!COL.code||!r[COL.code])return;
       var ts=COL.ind&&r[COL.ind]?String(r[COL.ind]).split(',').map(function(t){return t.trim();}).filter(function(t){return t&&t!=='null';}):[]; 
-      nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts});
+      nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts,rs:COL.rs?sf(r[COL.rs]):null,rsl:COL.rsl?sf(r[COL.rsl]):null});
     });
     if(!nd.length){alert('沒有讀到有效資料');return;}
     D=nd;

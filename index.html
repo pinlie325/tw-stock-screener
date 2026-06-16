@@ -183,13 +183,15 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <option value="capital|a">股本小→大</option><option value="turnval|d">成交值大→小</option><option value="volume|d">成交量大→小</option><option value="turnover|d">換手率高→低</option>
         <option value="margin|a">融資維持低→高</option>
         <option value="rs|d">RS% 高→低</option>
+        <option value="grossmargin|d">毛利率 高→低</option>
+        <option value="eps|d">單季EPS 高→低</option>
       </select>
       <button class="clr" onclick="selAll()">✕ 清除</button>
     </div>
     <div class="tw" id="tw">
       <table>
         <thead><tr>
-          <th style="width:44px" onclick="srt('code')">代碼</th><th style="width:52px" onclick="srt('name')">名稱</th><th style="width:44px" onclick="srt('close')">昨收</th><th style="width:48px" onclick="srt('pct')">漲幅<br>%</th><th style="width:44px" onclick="srt('avg')">均價</th><th style="width:52px" onclick="srt('volume')">成交</th><th style="width:48px" onclick="srt('turnover')">換手率<br>%</th><th style="width:52px" onclick="srt('capital')">股本<br>(億)</th><th style="width:56px" onclick="srt('turnval')">成交值</th><th style="width:48px" onclick="srt('margin')">融資<br>維持率%</th><th style="width:44px" onclick="srt('rs')">RS%</th>
+          <th style="width:44px" onclick="srt('code')">代碼</th><th style="width:52px" onclick="srt('name')">名稱</th><th style="width:44px" onclick="srt('close')">昨收</th><th style="width:48px" onclick="srt('pct')">漲幅<br>%</th><th style="width:44px" onclick="srt('avg')">均價</th><th style="width:52px" onclick="srt('volume')">成交</th><th style="width:48px" onclick="srt('turnover')">換手率<br>%</th><th style="width:52px" onclick="srt('capital')">股本<br>(億)</th><th style="width:56px" onclick="srt('turnval')">成交值</th><th style="width:48px" onclick="srt('margin')">融資<br>維持率%</th><th style="width:44px" onclick="srt('rs')">RS%</th><th style="width:48px" onclick="srt('grossmargin')">毛利率<br>%</th><th style="width:44px" onclick="srt('eps')">單季<br>EPS</th>
         </tr></thead>
         <tbody id="tb"></tbody>
       </table>
@@ -218,6 +220,8 @@ hr{border:none;border-top:1px solid #30363d;margin:14px 0}
         <tr><td>細產業</td><td>產業標籤，供左側分類篩選使用，同一股票可含多個標籤</td></tr>
         <tr><td>產業地位</td><td>公司在供應鏈中的角色定位，移至股票名稱可顯示完整說明</td></tr>
         <tr><td>RS%</td><td>相對強弱百分位（0–100）。數值越高代表近期表現優於越多個股。≥80 紅色強勢、≥50 黃色中性、&lt;50 灰色偏弱</td></tr>
+        <tr><td>毛利率%</td><td>最近一季毛利率。≥40% 綠色（高毛利）、≥20% 黃色（中等）、&lt;20% 灰色（偏低）。毛利率高代表產品競爭力強、定價能力佳</td></tr>
+        <tr><td>盈餘(單)</td><td>單季每股盈餘（EPS）。正值紅色、負值綠色。連續成長代表獲利動能強勁，虧損季需留意基本面是否惡化</td></tr>
       </tbody></table>
       <div class="tip">💡 欄位順序不影響匯入，系統自動比對欄位名稱。</div>
     </div></div>
@@ -412,7 +416,7 @@ function render(){
 
 function rRows(data){
   if(!data.length){
-    document.getElementById('tb').innerHTML='<tr><td colspan="11" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
+    document.getElementById('tb').innerHTML='<tr><td colspan="13" style="text-align:center;padding:40px;color:#8b949e">找不到符合條件的股票</td></tr>';
     return;
   }
   document.getElementById('tb').innerHTML=data.map(function(s){
@@ -437,9 +441,11 @@ function rRows(data){
       +'<td class="gr">'+(s.turnval!==null?s.turnval.toLocaleString():'--')+'</td>'
       +'<td class="'+mc+'">'+(s.margin!==null?s.margin.toFixed(1):'--')+'</td>'
       +'<td style="color:'+(s.rs!==null?(s.rs>=80?'#f85149':s.rs>=50?'#d29922':'#8b949e'):'#8b949e')+';font-weight:600">'+(s.rs!==null?s.rs.toFixed(1):'--')+'</td>'
+      +'<td style="color:'+(s.grossmargin!==null?(s.grossmargin>=40?'#3fb950':s.grossmargin>=20?'#d29922':'#8b949e'):'#8b949e')+'">'+(s.grossmargin!==null?s.grossmargin.toFixed(1)+'%':'--')+'</td>'
+      +'<td style="color:'+(s.eps!==null?(s.eps>0?'#f85149':s.eps<0?'#3fb950':'#8b949e'):'#8b949e')+';font-weight:600">'+(s.eps!==null?s.eps.toFixed(2):'--')+'</td>'
       +'</tr>'
       +'<tr style="border-bottom:1px solid #21262d">'
-      +'<td colspan="11" style="padding:2px 10px 5px 10px">'
+      +'<td colspan="13" style="padding:2px 10px 5px 10px">'
       +(s.position?'<span class="pos" style="display:inline;margin-right:10px">'+s.position+'</span>':'')
       +'<span style="display:inline-flex;flex-wrap:wrap;gap:3px">'+chips+'</span>'
       +'</td></tr>';
@@ -467,13 +473,13 @@ function parseXL(file){
       if(!rows.length){alert('讀取失敗');return;}
       var keys=Object.keys(rows[0]);
       function fc(arr){for(var i=0;i<arr.length;i++)for(var j=0;j<keys.length;j++)if(keys[j].indexOf(arr[i])>=0)return keys[j];return null;}
-      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),rsl:fc(['RSL'])};
+      var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),grossmargin:fc(['毛利率']),eps:fc(['盈餘(單)','單季','EPS'])};
       function sf(v){if(v===null||v===undefined||v===''||v==='--')return null;var n=parseFloat(v);return isNaN(n)?null:n;}
       var nd=[];
       rows.forEach(function(r){
         if(!COL.code||!r[COL.code])return;
         var ts=COL.ind&&r[COL.ind]?String(r[COL.ind]).split(',').map(function(t){return t.trim();}).filter(function(t){return t&&t!=='null';}):[]; 
-        nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts,rs:COL.rs?sf(r[COL.rs]):null,rsl:COL.rsl?sf(r[COL.rsl]):null});
+        nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts,rs:COL.rs?sf(r[COL.rs]):null,grossmargin:COL.grossmargin?sf(r[COL.grossmargin]):null,eps:COL.eps?sf(r[COL.eps]):null});
       });
       if(!nd.length){alert('沒有讀到有效資料');return;}
       D=nd;
@@ -625,13 +631,13 @@ function parseXLFromBuffer(buf,filename){
     if(!rows.length){alert('讀取失敗');return;}
     var keys=Object.keys(rows[0]);
     function fc(arr){for(var i=0;i<arr.length;i++)for(var j=0;j<keys.length;j++)if(keys[j].indexOf(arr[i])>=0)return keys[j];return null;}
-    var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),rsl:fc(['RSL'])};
+    var COL={code:fc(['代碼']),name:fc(['商品','名稱']),close:fc(['昨收']),pct:fc(['漲幅']),avg:fc(['均價']),volume:fc(['成交']),turnover:fc(['換手率']),turnval:fc(['成交值']),capital:fc(['股本']),margin:fc(['融資維持']),ind:fc(['細產業','產業']),pos:fc(['產業地位']),rs:fc(['RS%']),grossmargin:fc(['毛利率']),eps:fc(['盈餘(單)','單季','EPS'])};
     function sf(v){if(v===null||v===undefined||v===''||v==='--')return null;var n=parseFloat(v);return isNaN(n)?null:n;}
     var nd=[];
     rows.forEach(function(r){
       if(!COL.code||!r[COL.code])return;
       var ts=COL.ind&&r[COL.ind]?String(r[COL.ind]).split(',').map(function(t){return t.trim();}).filter(function(t){return t&&t!=='null';}):[]; 
-      nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts,rs:COL.rs?sf(r[COL.rs]):null,rsl:COL.rsl?sf(r[COL.rsl]):null});
+      nd.push({code:String(r[COL.code]),name:COL.name?String(r[COL.name]||''):'',close:COL.close?sf(r[COL.close]):null,pct:COL.pct?sf(r[COL.pct]):null,avg:COL.avg?sf(r[COL.avg]):null,volume:COL.volume?sf(r[COL.volume]):null,turnover:COL.turnover?sf(r[COL.turnover]):null,turnval:COL.turnval?sf(r[COL.turnval]):null,capital:COL.capital?sf(r[COL.capital]):null,margin:COL.margin?sf(r[COL.margin]):null,position:COL.pos&&r[COL.pos]?String(r[COL.pos]):'',tags:ts,rs:COL.rs?sf(r[COL.rs]):null,grossmargin:COL.grossmargin?sf(r[COL.grossmargin]):null,eps:COL.eps?sf(r[COL.eps]):null});
     });
     if(!nd.length){alert('沒有讀到有效資料');return;}
     D=nd;

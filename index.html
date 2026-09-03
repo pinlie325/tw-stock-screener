@@ -60,7 +60,7 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:var(--bg-page)
 
 /* ── HEADER ── */
 .hdr{background:var(--bg-panel);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:8px;position:fixed;top:0;left:0;right:0;z-index:100;}
-.bbar{background:var(--bg-panel);border-top:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;justify-content:center;gap:14px;position:fixed;left:0;right:0;bottom:0;z-index:900;}
+.bbar{background:var(--bg-panel);border-top:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;justify-content:center;gap:16px;position:fixed;left:0;right:0;bottom:0;z-index:900;}
 .hdr-t{font-size:14px;font-weight:700;color:#58a6ff;white-space:nowrap}
 .hdr-sub{font-size:12px;color:var(--text-secondary);margin-left:4px}
 .hdr-r{margin-left:auto;display:flex;gap:6px}
@@ -74,6 +74,16 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:var(--bg-page)
 .fbar-search:focus{border-color:#58a6ff}
 .fbar-clear{position:absolute;right:4px;background:none;border:none;color:var(--text-secondary);font-size:18px;cursor:pointer;padding:4px 8px;line-height:1;display:none}
 .fbar-clear:hover{color:var(--text-primary)}
+#num-keypad{display:none;position:fixed;top:95px;right:10px;z-index:120;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:7px;box-shadow:0 4px 10px #0006;grid-template-columns:repeat(3,1fr);gap:6px;box-sizing:border-box;width:180px}
+.numkey{width:100%;height:48px;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-size:19px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;box-sizing:border-box}
+.numkey:active{background:#1f3a5f;border-color:#58a6ff}
+.numkey-ac{color:#f85149;font-size:14px;font-weight:800}
+.numkey-enter{color:#58a6ff;font-size:20px;font-weight:700}
+#fsearch-suggest{display:none;position:fixed;top:95px;z-index:118;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;max-height:260px;overflow-y:auto;box-shadow:0 4px 10px #0006;box-sizing:border-box}
+.fsearch-suggest-item{padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);font-size:14px;color:var(--text-primary);display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsearch-suggest-item:last-child{border-bottom:none}
+.fsearch-suggest-item:active{background:#1f3a5f}
+.fsearch-suggest-code{color:var(--text-secondary);font-family:monospace;flex-shrink:0}
 .fbar-tags{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 6px;min-height:0}
 .fbar-tags:empty{display:none}
 .fbar-sel-tag{display:inline-flex;align-items:center;gap:4px;background:#1f3a5f;color:#79c0ff;border:1px solid #1f6feb55;border-radius:12px;font-size:11px;padding:2px 8px;cursor:pointer}
@@ -102,7 +112,18 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:var(--bg-page)
 /* ── CARDS ── */
 .cards{flex:1;min-height:0;padding:8px 5px 64px;display:grid;grid-template-columns:1fr;gap:8px;overflow-y:auto;align-content:start}
 @media(min-width:640px){.cards{grid-template-columns:1fr 1fr;padding:10px 12px 64px}}
+/* 桌機兩欄檢視時，中間欄縫放一個可拖曳調整欄寬比例的把手（參考Tide潮汐：拖曳調整寬度，雙擊還原預設） */
+#col-resize-handle{display:none;position:fixed;top:95px;bottom:0;left:50%;transform:translateX(-50%);width:20px;z-index:50;align-items:center;justify-content:center;cursor:col-resize;user-select:none;-webkit-user-select:none}
+@media(min-width:640px){#col-resize-handle.on{display:flex}}
+#col-resize-line{position:absolute;top:0;bottom:0;left:50%;width:1.5px;background:var(--text-secondary);opacity:0.85;transform:translateX(-50%);pointer-events:none}
+#col-resize-grip{position:relative;width:10px;height:28px;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:5px;cursor:col-resize;z-index:1;user-select:none;-webkit-user-select:none}
+#col-resize-grip::before{content:'';position:absolute;left:3px;top:9px;width:1.5px;height:10px;background:var(--text-secondary);box-shadow:4px 0 0 var(--text-secondary)}
+#col-resize-grip:hover,#col-resize-grip.dragging{border-color:var(--text-secondary)}
+#col-resize-grip:hover::before,#col-resize-grip.dragging::before{background:var(--text-primary);box-shadow:4px 0 0 var(--text-primary)}
+#col-resize-tip{position:absolute;left:20px;top:50%;transform:translateY(-50%);background:#000;color:#fff;font-size:11px;padding:5px 9px;border-radius:5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+#col-resize-handle:hover #col-resize-tip{opacity:0.92}
 @media(min-width:640px){#dahu-rotation-detail{left:auto !important;width:420px !important;max-width:90vw;box-shadow:-8px 0 24px #0008;border-left:1px solid var(--border);}}
+
 @media(max-width:480px){
   .cg-item{padding:4px 6px;min-height:36px}
   .cg-lbl{font-size:10px;white-space:nowrap}
@@ -126,10 +147,10 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:var(--bg-page)
 .card-tags-row::-webkit-scrollbar{display:none}
 .card-group-bar{background:var(--border);color:#d29922;font-size:12px;padding:4px 8px;border-radius:4px;line-height:1.4;flex-shrink:0}
 .card-group-bar span{cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
-.card-concept-bar{background:#1f6feb22;color:#39c5cf;font-size:12px;padding:4px 8px;border-radius:4px;line-height:1.4;flex-shrink:0}
+.card-concept-bar{background:#1f6feb22;color:#39c5cf;font-size:12px;padding:3px 8px;border-radius:4px;line-height:1.3;flex-shrink:0}
 .card-concept-bar span{cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
 .card-strategy-bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
-.stag{background:#1a2a3a;color:#58a6ff;border:1px solid #1f6feb55;border-radius:4px;font-size:11px;padding:2px 6px;white-space:nowrap}
+.stag{background:#1a2a3a;color:#58a6ff;border:1px solid #1f6feb55;border-radius:4px;font-size:12px;padding:3px 8px;line-height:1.3;white-space:nowrap;display:inline-flex;align-items:center}
 .card:active{border-color:#58a6ff;background:var(--bg-panel-alt)}
 
 /* Card header */
@@ -141,7 +162,7 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:var(--bg-page)
 .card-exch.tpex{background:#3fb95018;color:#3fb950;border:1px solid #3fb95033}
 .card-name{font-size:17px;font-weight:600;color:var(--text-primary);line-height:1.2}
 .card-pattern{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
-.cpat{font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap}
+.cpat{font-size:12px;font-weight:700;padding:3px 8px;line-height:1.3;border-radius:4px;white-space:nowrap}
 .cpat-bull{background:#3a1a1a;color:#f85149;border:1px solid #f8514955}
 .cpat-bear{background:#1a3a1a;color:#3fb950;border:1px solid #3fb95055}
 .cpat-neu{background:var(--bg-panel-alt);color:var(--text-secondary);border:1px solid var(--border)}
@@ -177,7 +198,7 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:var(--bg-page)
 
 /* Card tags */
 .card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
-.ctag{background:var(--bg-panel-alt);border-radius:4px;padding:3px 8px;font-size:12px;color:var(--text-secondary);text-align:center;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
+.ctag{background:var(--bg-panel-alt);border-radius:4px;padding:3px 8px;font-size:12px;line-height:1.3;color:var(--text-secondary);text-align:center;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
 .ctag.hi{background:#1f6feb22;color:#58a6ff}
 
 /* Card position */
@@ -255,7 +276,7 @@ body{font-family:'Microsoft JhengHei',Arial,sans-serif;background:var(--bg-page)
 .yf-close{color:var(--text-secondary);cursor:pointer;font-size:18px;padding:0 4px;line-height:1}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) scale(0.9);background:#238636;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;display:none;z-index:1050;white-space:nowrap;opacity:0;transition:opacity .18s,transform .18s}
+.toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%) scale(0.9);background:#238636;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;display:none;z-index:1050;white-space:nowrap;opacity:0;transition:opacity .18s,transform .18s}
 .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
 
 /* ── XQ COPY BANNER ── */
@@ -845,12 +866,16 @@ function adminRemoveUser(email){
 </script>
 
 <!-- BOTTOM BAR：跟上方header一樣是整條橫幅背景，不是懸浮圓形按鈕。👤跟🚪只有登入後才會顯示，▲用grid固定在正中間 -->
+<!-- 返回大戶籌碼浮檔鈕：從大戶籌碼趨勢表點個股跳過來後才會顯示，點一下就直接回到原本選到的分區 -->
+<button id="report-return-fab" onclick="_reportReturnClick()" style="display:none;position:fixed;right:14px;bottom:70px;z-index:850;background:#1f6feb;border:none;border-radius:20px;color:#fff;width:180px;height:36px;padding:0 12px;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-size:13px;font-weight:700;box-shadow:0 2px 10px #0006;white-space:nowrap;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;"></button>
+
 <div class="bbar" id="bbar">
-  <button id="logout-btn" onclick="doLogout()" style="display:none;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:#f85149;width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;font-size:15px;" title="登出">🚪</button>
-  <button id="admin-btn" onclick="openAdminPanel()" style="display:none;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:#58a6ff;width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;font-size:17px;">👤</button>
-  <button id="float-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);padding:0 34px;height:38px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer;font-size:13px;">▲</button>
-  <button id="general-note-btn" onclick="generalNoteBtnClick()" style="background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;padding:0 14px;height:38px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer;white-space:nowrap;">📣</button>
-  <button onclick="openSettings()" title="設定" style="background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;font-size:17px;">⚙️</button>
+  <button id="logout-btn" onclick="doLogout()" style="display:none;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:10px;color:#f85149;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;font-size:17px;box-sizing:border-box;" title="登出">🚪</button>
+  <button id="admin-btn" onclick="openAdminPanel()" style="display:none;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:10px;color:#58a6ff;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-sizing:border-box;">👤</button>
+  <button id="float-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:10px;color:var(--text-secondary);width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer;font-size:15px;">▲</button>
+  <button id="dahu-quick-btn" onclick="openDahuRotationBoard()" title="大戶籌碼趨勢表" style="background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:10px;color:var(--text-secondary);width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer;font-size:18px;">🐋</button>
+  <button id="general-note-btn" onclick="generalNoteBtnClick()" style="position:relative;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:10px;color:var(--text-secondary);width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer;font-size:18px;">📣<span id="general-note-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#f85149;color:#fff;font-size:10px;font-weight:700;line-height:1;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 3px;box-sizing:border-box;"></span></button>
+  <button onclick="openSettings()" title="設定" style="background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:10px;color:var(--text-secondary);width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-sizing:border-box;">⚙️</button>
 </div>
 
 <!-- ADMIN MODAL -->
@@ -925,23 +950,23 @@ function adminRemoveUser(email){
     <button onclick="showAddToHome()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
       📲 加入主畫面（iOS）
     </button>
-    <button onclick="openMarginReport()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
-      📊 各族群融資維持率報表
-    </button>
-    <button onclick="openDisposalReport()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
-      🚨 處置股名單
+    <button onclick="openExcludeManager()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
+      🚫 排除股票清單
     </button>
     <button onclick="openMacroBoard()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
       🌍 市場參考看板（原油／美元／VIX／美債）
     </button>
-    <button onclick="openDahuRotationBoard()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
-      🧭 大戶籌碼族群輪動圖
-    </button>
     <button onclick="openEconCalendar()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
       🗓 財經行事曆
     </button>
-    <button onclick="openExcludeManager()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;text-align:left">
-      🚫 排除股票清單
+    <button onclick="openMarginReport()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
+      🏭 各族群融資維持率報表
+    </button>
+    <button onclick="openDisposalReport()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;margin-bottom:10px;text-align:left">
+      🚨 處置股名單
+    </button>
+    <button onclick="openDahuRotationBoard()" style="width:100%;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;padding:12px;cursor:pointer;text-align:left">
+      🐋 大戶籌碼趨勢表
     </button>
   </div>
 </div>
@@ -967,34 +992,18 @@ function adminRemoveUser(email){
 <!-- DAHU CHIP ROTATION MODAL -->
 <div id="dahu-rotation-modal" style="display:none;position:fixed;inset:0;background:var(--bg-page);z-index:9999;flex-direction:column">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg-panel);flex-shrink:0">
-    <span style="font-size:16px;font-weight:700;color:var(--text-primary)">🧭 大戶籌碼族群輪動圖</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text-primary)">🐋 大戶籌碼趨勢表</span>
     <button onclick="closeDahuRotationBoard()" style="background:none;border:none;color:var(--text-secondary);font-size:22px;cursor:pointer">✕</button>
   </div>
   <div style="flex:1;overflow-y:auto;padding:14px;">
-    <div style="display:flex;gap:6px;margin-bottom:10px;">
-      <button id="dahu-mode-group-btn" onclick="switchDahuRotationMode('group')" style="flex:1;background:#1f6feb;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;padding:8px 4px;cursor:pointer;">族群檢視</button>
-      <button id="dahu-mode-stock-btn" onclick="switchDahuRotationMode('stock')" style="flex:1;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:12px;font-weight:700;padding:8px 4px;cursor:pointer;">個股散點圖</button>
-      <button id="dahu-mode-list-btn" onclick="switchDahuRotationMode('list')" style="flex:1;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:12px;font-weight:700;padding:8px 4px;cursor:pointer;">列表</button>
+    <div id="dahu-group-flex" style="display:flex;flex-direction:column;gap:10px;">
+      <div id="dahu-quad-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;"></div>
+      <div id="dahu-group-stock-list" style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:10px;min-height:420px;overflow-x:hidden;"></div>
     </div>
-    <div id="dahu-rotation-canvas-wrap" style="position:relative;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:420px;">
+    <div id="dahu-rotation-canvas-wrap" style="display:none;position:relative;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:420px;">
       <canvas id="dahu-rotation-canvas" style="display:block;width:100%;cursor:pointer;touch-action:none" onclick="dahuRotationCanvasClick(event)"></canvas>
       <div id="dahu-rotation-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;color:var(--text-secondary);font-size:13px;text-align:center;padding:20px;box-sizing:border-box;">尚無資料，請先載入選股Excel</div>
       <button id="dahu-chart-reset-zoom-btn" onclick="_dahuResetView()" style="display:none;position:absolute;top:8px;right:8px;z-index:5;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;padding:5px 9px;cursor:pointer;">⟲ 重置</button>
-    </div>
-    <div id="dahu-rotation-list" style="display:none;"></div>
-    <div id="dahu-rotation-legend" style="margin-top:12px;padding:10px;background:var(--bg-panel-alt);border:1px solid var(--border);border-radius:8px;">
-      <div style="font-size:14px;color:var(--text-primary);font-weight:700;margin-bottom:8px;">四象限定義（X軸：大戶買賣比% 主力參與程度；Y軸：大戶差比% 買超力道）</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-        <div style="background:#1f6feb22;border-left:3px solid #58a6ff;padding:6px 8px;border-radius:4px;"><b style="color:#58a6ff;font-size:13px;">改善區(籌碼改善中)</b><div style="color:var(--text-primary);font-size:12px;margin-top:2px;">買賣比&lt;70% 且 差比≥20%</div></div>
-        <div style="background:#3fb95022;border-left:3px solid #3fb950;padding:6px 8px;border-radius:4px;"><b style="color:#3fb950;font-size:13px;">領先區(強勢主流)</b><div style="color:var(--text-primary);font-size:12px;margin-top:2px;">買賣比≥70% 且 差比≥20%</div></div>
-        <div style="background:var(--bg-panel);border-left:3px solid var(--text-secondary);padding:6px 8px;border-radius:4px;"><b style="color:var(--text-primary);font-size:13px;">落後區(弱勢觀望)</b><div style="color:var(--text-primary);font-size:12px;margin-top:2px;">買賣比&lt;70% 且 差比&lt;20%</div></div>
-        <div style="background:#d2992222;border-left:3px solid #d29922;padding:6px 8px;border-radius:4px;"><b style="color:#d29922;font-size:13px;">弱化區(資金退潮)</b><div style="color:var(--text-primary);font-size:12px;margin-top:2px;">買賣比≥70% 且 差比&lt;20%</div></div>
-      </div>
-      <div style="font-size:12px;color:var(--text-primary);line-height:1.7;margin-top:10px;">
-        <b style="color:var(--text-primary);">族群檢視</b>：以「細產業」標籤分組，但同一個族群裡常常混著領先/改善/弱化/落後好幾種股票，只畫一顆平均泡泡容易失真，所以改成依組內個股實際所在的象限，拆成最多4顆子泡泡（各自用同象限成分股重新算一次成交值加權平均座標），顏色即代表所在象限，泡泡大小依該子群檔數決定，點任一顆子泡泡都會開啟該族群完整明細。<br><br>
-        <b style="color:var(--text-primary);">個股散點圖</b>：不分族群，直接把每一檔成交值較大的個股（前40檔）攤開成一個點，點的顏色就是它自己落在哪一區，每個點旁邊都會標名字，點任一顆直接跳去該股卡片。（族群泡泡圖、個股散點圖都支援雙指縮放、單指拖曳平移、桌面滑鼠滾輪縮放，右上角有重置按鈕可一鍵回到預設大小）<br><br>
-        資料來源：Excel「大戶買賣比」「大戶差比」欄位（依XQ籌碼數據定義），僅供參考。
-      </div>
     </div>
   </div>
 
@@ -1040,7 +1049,7 @@ function adminRemoveUser(email){
 <!-- MARGIN REPORT MODAL -->
 <div id="margin-report-modal" style="display:none;position:fixed;inset:0;background:var(--bg-page);z-index:9999;flex-direction:column">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg-panel);flex-shrink:0">
-    <span style="font-size:16px;font-weight:700;color:var(--text-primary)">📊 各族群融資維持率</span>
+    <span style="font-size:16px;font-weight:700;color:var(--text-primary)">🏭 各族群融資維持率</span>
     <button onclick="document.getElementById('margin-report-modal').style.display='none'" style="background:none;border:none;color:var(--text-secondary);font-size:22px;cursor:pointer">✕</button>
   </div>
   <div id="margin-report-nav" style="display:flex;gap:6px;padding:8px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;background:var(--bg-panel);border-bottom:1px solid var(--border);flex-shrink:0;cursor:grab"></div>
@@ -1305,13 +1314,13 @@ function adminRemoveUser(email){
 <!-- FILTER BAR -->
 <div class="fbar">
   <div class="fbar-search-wrap">
-    <input class="fbar-search" id="fsearch" type="text" placeholder="搜尋代碼或名稱..." oninput="doSearch(this.value);toggleClear(this.value)">
+    <input class="fbar-search" id="fsearch" type="text" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="搜尋代碼或名稱..." oninput="doSearch(this.value);toggleClear(this.value);fsearchSuggestInput(this.value)" onfocus="showNumKeypad();fsearchSuggestInput(this.value)" onblur="hideNumKeypad();hideFsearchSuggest()">
     <button class="fbar-clear" id="fclear" onclick="clearSearch()">✕</button>
   </div>
   <button class="btn-filter" id="fbtn" onclick="openDrawer()">🔍 產業</button>
   <button class="btn-filter" onclick="showCompactList()" title="簡列">🏷️</button>
   <button class="btn-filter" onclick="openStrategyFilter()" title="策略篩選">📌</button>
-  <button class="btn-filter" onclick="openCompareModal()" title="個股對照" style="font-weight:900;font-size:16px;">⇄</button>
+  <button class="btn-filter" id="fbtn-compare" onclick="openCompareModal()" title="個股對照" style="font-weight:900;font-size:16px;">⇄</button>
 </div>
 <div id="fbar-tags-wrap" style="display:none;align-items:center;gap:5px;padding:0 12px 6px;flex-wrap:wrap">
   <button class="fbar-clear-all" id="fbar-clear-all" onclick="selAll()">✕ 清除全部</button>
@@ -1320,6 +1329,21 @@ function adminRemoveUser(email){
   <span id="concept-filter-chip" style="display:none;background:var(--border);color:#39c5cf;font-size:12px;padding:3px 10px;border-radius:12px;cursor:pointer;" onclick="clearConceptFilter()"></span>
 </div>
 
+<div id="num-keypad">
+  <button class="numkey" data-k="1" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('1')" onclick="_numKeypadInput('1')">1</button>
+  <button class="numkey" data-k="2" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('2')" onclick="_numKeypadInput('2')">2</button>
+  <button class="numkey" data-k="3" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('3')" onclick="_numKeypadInput('3')">3</button>
+  <button class="numkey" data-k="4" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('4')" onclick="_numKeypadInput('4')">4</button>
+  <button class="numkey" data-k="5" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('5')" onclick="_numKeypadInput('5')">5</button>
+  <button class="numkey" data-k="6" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('6')" onclick="_numKeypadInput('6')">6</button>
+  <button class="numkey" data-k="7" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('7')" onclick="_numKeypadInput('7')">7</button>
+  <button class="numkey" data-k="8" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('8')" onclick="_numKeypadInput('8')">8</button>
+  <button class="numkey" data-k="9" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('9')" onclick="_numKeypadInput('9')">9</button>
+  <button class="numkey" data-k="0" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadInput('0')" onclick="_numKeypadInput('0')">0</button>
+  <button class="numkey numkey-ac" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadClearAll()" onclick="_numKeypadClearAll()">AC</button>
+  <button class="numkey numkey-enter" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();_numKeypadEnter()" onclick="_numKeypadEnter()">↵</button>
+</div>
+<div id="fsearch-suggest"></div>
 <!-- SORT BAR -->
 <div class="sbar" id="sbar">
   <button class="sbtn on" data-k="pct" onclick="setSrtToggle(this,'pct','漲跌幅 ↑','漲跌幅 ↓')">漲跌幅 ↑</button>
@@ -1385,6 +1409,12 @@ function adminRemoveUser(email){
   </div>
 </div>
 
+<!-- 欄寬拖曳把手（桌機兩欄檢視，放在欄縫中間，可拖曳調整左右欄寬比例） -->
+<div id="col-resize-handle" onmousedown="_crGripDown(event)" ontouchstart="_crGripDown(event)" ondblclick="_crGripReset()">
+  <div id="col-resize-line"></div>
+  <div id="col-resize-grip"></div>
+  <div id="col-resize-tip">拖曳調整寬度．雙擊還原預設</div>
+</div>
 <!-- FILTER DRAWER -->
 <div class="drawer-bg" id="dbg" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
@@ -1426,6 +1456,8 @@ var D_RAW=[]; // 完整未過濾清單，黑名單增減時都從這裡重新套
 var noteMap={}, sharedNoteMap={}, sharedNoteHistory={}, favMap={};
 var generalNoteHistory=[]; // 留言板：不綁特定股票代碼的獨立留言，陣列，每則 {time, text, name}，新到舊排序
 var gnActiveJumpCode = null; // 記錄目前的搜尋是不是從大聲公點標籤跳過來的，是的話再按一次大聲公鈕就變成清除搜尋
+var _reportReturnPending = false; // 記錄目前搜尋是不是從某個報表(大戶籌碼/融資維持率/處置股)點個股跳過來的，是的話顯示「返回OO」浮檔鈕
+var _reportReturnFn = null; // 點浮檔鈕時要重新打開哪個報表
 // ── 排除股票清單（黑名單）：存在共用試算表的「黑名單」分頁，載入Excel時自動濾掉，只有管理者能新增/移除 ──
 var EXCLUDE_CODES = [];
 var EXCLUDE_NAMES = {};
@@ -1524,8 +1556,12 @@ function updateGeneralNoteBtn(){
   var btn = document.getElementById('general-note-btn');
   if(!btn) return;
   var n = generalNoteHistory.length;
-  // 白色在深色底上太搶眼，改用跟其他底部icon一樣低調的灰色，只顯示數字不寫「大聲公」文字
-  btn.textContent = n ? ('📣 '+n) : '📣';
+  // 底部按鈕統一大小後，留言數改用右上角小紅點徽章顯示，不再讓按鈕本身撐寬跟其他icon不一樣大
+  var badge = document.getElementById('general-note-badge');
+  if(badge){
+    if(n){ badge.textContent = n > 99 ? '99+' : String(n); badge.style.display = 'flex'; }
+    else { badge.style.display = 'none'; badge.textContent = ''; }
+  }
 }
 function openGeneralNoteModal(){
   renderGeneralNoteList();
@@ -1778,6 +1814,102 @@ var sel=[],sk='pct',sd='d',searchQ='';
 function toggleDClear(v){var b=document.getElementById('dclear');if(b)b.style.display=v?'block':'none';}
 function clearDSearch(){var i=document.getElementById('dsearch');if(i){i.value='';doTagSearch('');toggleDClear('');}}
 function toggleClear(v){var b=document.getElementById('fclear');if(b)b.style.display=v?'block':'none';}
+// ── 浮動數字鍵盤：搜尋欄多半是輸入股票代碼(數字)，原生鍵盤(尤其注音)按鍵小又要切換，
+// 這裡在搜尋欄取得焦點時另外浮出一排大顆數字鍵，方便快速輸入代碼；輸入名稱時仍可用原生鍵盤照打。
+function showNumKeypad(){
+  var el = document.getElementById('num-keypad');
+  if(!el) return;
+  // 鍵盤外緣(右邊)對齊「個股對照」按鈕的外緣(右邊)。用CSS本來就固定的寬度(跟#num-keypad的
+  // width:180px一致)換算right值，不用去量display:none元素的寬度(那個量不準，之前害鍵盤跑出畫面外)。
+  var KEYPAD_W = 180;
+  var fbtn = document.getElementById('fbtn-compare');
+  if(fbtn){
+    var r = fbtn.getBoundingClientRect();
+    var right = window.innerWidth - r.right;
+    if(right < 10) right = 10;
+    // 防呆：這樣算出來的話，如果鍵盤左邊會超出畫面左邊界，改成貼齊畫面左邊界
+    if(window.innerWidth - right - KEYPAD_W < 10){
+      right = window.innerWidth - KEYPAD_W - 10;
+    }
+    el.style.right = right + 'px';
+    el.style.left = 'auto';
+  }
+  el.style.display = 'grid';
+}
+function hideNumKeypad(){
+  var el = document.getElementById('num-keypad');
+  if(el) el.style.display = 'none';
+}
+function _numKeypadInput(d){
+  var i = document.getElementById('fsearch');
+  if(!i) return;
+  i.value = (i.value || '') + d;
+  doSearch(i.value);
+  toggleClear(i.value);
+  fsearchSuggestInput(i.value);
+}
+function _numKeypadClearAll(){
+  var i = document.getElementById('fsearch');
+  if(!i) return;
+  i.value = '';
+  doSearch('', true);
+  toggleClear('');
+  fsearchSuggestInput('');
+}
+function _numKeypadEnter(){
+  var i = document.getElementById('fsearch');
+  if(i){
+    doSearch(i.value, true);
+    toggleClear(i.value);
+  }
+  hideFsearchSuggest();
+  hideNumKeypad();
+  if(i) i.blur();
+}
+
+// ── 搜尋欄自動完成選單：跟「個股對照」的建議清單同一套邏輯，打字時列出代碼/名稱符合的個股，
+// 點一下直接跳轉鎖定那一檔，比在下面卡片列表裡滑動找快很多。
+function fsearchSuggestInput(v){
+  var box = document.getElementById('fsearch-suggest');
+  if(!box) return;
+  var q = (v || '').trim().toLowerCase();
+  if(!q){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  // 選單左右邊線對齊搜尋框本身的左右邊線
+  var searchEl = document.getElementById('fsearch');
+  if(searchEl){
+    var sr = searchEl.getBoundingClientRect();
+    box.style.left = sr.left + 'px';
+    box.style.right = (window.innerWidth - sr.right) + 'px';
+  }
+  var matches = (D || []).filter(function(s){
+    return (s.code && s.code.toLowerCase().indexOf(q) >= 0) || (s.name && s.name.toLowerCase().indexOf(q) >= 0);
+  }).slice(0, 8);
+  if(!matches.length){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  box.innerHTML = matches.map(function(s){
+    return '<div class="fsearch-suggest-item" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()" ontouchend="event.preventDefault();selectFsearchSuggest(\''+s.code+'\')" onclick="selectFsearchSuggest(\''+s.code+'\')">'
+      +'<span class="fsearch-suggest-code">'+s.code+'</span><span>'+s.name+'</span>'
+    +'</div>';
+  }).join('');
+  box.style.display = 'block';
+}
+function hideFsearchSuggest(){
+  var box = document.getElementById('fsearch-suggest');
+  if(box){ box.style.display = 'none'; box.innerHTML = ''; }
+}
+function selectFsearchSuggest(code){
+  var i = document.getElementById('fsearch');
+  if(i) i.value = code;
+  doSearch(code, true);
+  toggleClear(code);
+  hideFsearchSuggest();
+  hideNumKeypad();
+  if(i) i.blur();
+  setTimeout(function(){
+    var card = document.querySelector('#cards .card');
+    if(card) card.scrollIntoView({block:'start', behavior:'instant'});
+  }, 60);
+}
+
 function clearSearch(){
   // 記住目前畫面上第一張可見卡片的代碼
   var firstCard = document.querySelector('#cards .card');
@@ -1785,7 +1917,7 @@ function clearSearch(){
   var targetCode = firstCode ? firstCode.textContent.trim() : null;
 
   var i=document.getElementById('fsearch');
-  if(i){i.value='';doSearch('', true);toggleClear('');}
+  if(i){i.value='';doSearch('', true);toggleClear('');hideFsearchSuggest();}
 
   // render 後捲到該卡片
   if(targetCode){
@@ -1829,8 +1961,9 @@ function doSearch(v, immediate){
   searchQ=v ? v.trim().toLowerCase() : '';
   // 如果使用者自己改了搜尋內容（不是大聲公跳轉當下設的那個代碼），就取消「跳轉來的搜尋」標記
   if(gnActiveJumpCode && v !== gnActiveJumpCode){ gnActiveJumpCode = null; }
+  if(_reportReturnPending && v !== gnActiveJumpCode){ _hideReportReturnFab(); }
   if(_searchDebounceTimer){ clearTimeout(_searchDebounceTimer); _searchDebounceTimer = null; }
-  if(immediate){ render(); } else { _searchDebounceTimer = setTimeout(render, 150); }
+  if(immediate){ render(); } else { _searchDebounceTimer = setTimeout(render, 280); }
 }
 
 // ── DRAWER ──
@@ -2113,7 +2246,19 @@ function render(){
     document.getElementById('cards').innerHTML='<div class="empty"><div class="empty-icon">🔍</div>找不到符合條件的股票</div>';
     return;
   }
-  document.getElementById('cards').innerHTML=data.map(function(s){
+  // 性能保護：沒有任何搜尋/篩選時，整批渲染全部股票會使 render() 單次封鎖時間進入秒級（實測876支時超過3秒），打字每一下都會重新跑一次，容易造成頁面卡住甚至行動端瀏覽器被系統強制關閉。
+  // 所以在完全沒有篩選條件的預設檢視下，只先渲染前 RENDER_CAP 筆（依目前排序），下面提示還有多少筆；
+  // 一旦有搜尋或任何篩選条件，結果集通常就小得多，不受影響、仍然顯示全部符合項目。
+  var RENDER_CAP = 200;
+  var _noFilterActive = !searchQ && !sel.length && !groupFilter && !conceptFilter
+    && !(window._hcatCodes && window._hcatCodes.length) && !noteFilterOn && !allNoteFilterOn && !favFilterOn;
+  var renderData = data;
+  var _hiddenCount = 0;
+  if(_noFilterActive && data.length > RENDER_CAP){
+    renderData = data.slice(0, RENDER_CAP);
+    _hiddenCount = data.length - RENDER_CAP;
+  }
+  document.getElementById('cards').innerHTML=renderData.map(function(s){
     var pct=s.pct,pc=pct>0?'up':pct<0?'dn':'fl';
     var ps=pct!==null?(pct>0?'+':'')+pct.toFixed(2)+'%':'--';
     var mc=s.margin!==null?(s.margin<160?'warn':''):'';
@@ -2131,7 +2276,6 @@ function render(){
               +(function(){var e=getExchLabel(s.code);return '<span class="card-exch '+e.cls+'">'+e.txt+'</span>';})()
               +'<span class="card-name">'+s.name+'</span>'
               +(function(){if(s.disposal){var ft=s.disposal.freq?(s.disposal.freq+'分盤'):'處置中';return '<span title="'+s.disposal.reason.replace(/"/g,'&quot;')+'　期間 '+s.disposal.periodRaw+'" style="background:#f8514933;color:#f85149;border:1px solid #f85149;border-radius:4px;font-size:10px;padding:1px 5px;font-weight:700;">⚠'+ft+'</span>';}if(s.attention){return '<span title="'+s.attention.reason.replace(/"/g,'&quot;')+'　'+s.attention.date+'" style="background:#d2992233;color:#d29922;border:1px solid #d29922;border-radius:4px;font-size:10px;padding:1px 5px;font-weight:700;">注意</span>';}return '';})()
-              +'<button class="card-cam" onclick="event.stopPropagation();toggleFavorite(\''+s.code+'\',\''+s.name.replace(/'/g,"\\'")+'\',this)">'+(favMap[s.code]?'❤️':'🤍')+'</button>'
               +'<button class="card-cam" onclick="event.stopPropagation();openNoteEdit(\''+s.code+'\',\''+s.name.replace(/'/g,"\\'")+'\',\'shared\')">'+(sharedNoteMap[s.code]?'💬':'💬+')+'</button>'
             +'</div>'
           +'<div class="card-pattern" id="pattern-'+s.code+'"></div>'
@@ -2152,7 +2296,7 @@ function render(){
         +'<button class="card-line" style="background:#1f6feb22;border-color:#58a6ff;color:#58a6ff;cursor:pointer;" onclick="event.stopPropagation();openValuationTool(\''+s.code+'\')">🎯評估</button>'
       +'</div>'
       +'<div class="card-price" style="margin-bottom:6px">'
-        +'<button class="card-cam" style="margin-right:2px" onclick="event.stopPropagation();cardScreenshot(event,this.closest(\'.card\'))">📷</button>'
+        +'<button class="card-cam" style="margin-right:2px" onclick="event.stopPropagation();toggleFavorite(\''+s.code+'\',\''+s.name.replace(/'/g,"\\'")+'\',this)">'+(favMap[s.code]?'❤️':'🤍')+'</button>'
         +(s.close!==null?'<span class="card-avg">昨收 <span>'+s.close.toFixed(1)+'</span></span>':'')
         +(s.avg!==null?'<span class="card-avg">均價 <span>'+s.avg.toFixed(1)+'</span></span>':'')
       +'</div>'
@@ -2172,16 +2316,15 @@ function render(){
         +(function(){var rg=s.revgrowth;var rgc=rg!==null?(rg>0?'up':rg<0?'dn':''):'';return '<div class="cg-item"><div class="cg-lbl">營收增%</div><div class="cg-val '+rgc+'">'+(rg!==null?((rg>0?'+':'')+rg.toFixed(1)):'--')+'</div></div>';})()
         +'<div class="cg-item"><div class="cg-lbl">單季EPS</div><div class="cg-val '+epsc+'">'+(s.eps!==null?s.eps.toFixed(2):'--')+'</div></div>'
         +(function(){var pe; if(s.pe!==null&&s.pe!==undefined){pe=s.pe.toFixed(1);}else{var annEps=s.eps!==null?s.eps*4/0.6:null;pe=(annEps&&annEps>0&&s.volume!==null)?(s.volume/(annEps)).toFixed(1):null;}return '<div class="cg-item"><div class="cg-lbl">本益比</div><div class="cg-val">'+(pe!==null?pe:'--')+'</div></div>';})()
+        +'<div class="cg-item" style="display:flex;align-items:center;justify-content:center;"><button class="card-cam" style="font-size:20px;opacity:0.7" onclick="event.stopPropagation();cardScreenshot(event,this.closest(\'.card\'))">📷</button></div>'
       +'</div>'
       // Yahoo K線圖區塊（延遲建立：展開時才產生內容，初始渲染只留空殼，大幅減少每張卡片的HTML量）
       +'<div class="yf-wrap" id="yf-'+s.code+'"></div>'
     +'</div>';
-  }).join('');
+  }).join('')+(_hiddenCount>0?'<div style="padding:14px 12px;text-align:center;color:var(--text-secondary);font-size:12px;">已顯示前'+RENDER_CAP+'筆（依目前排序），還有'+_hiddenCount+'筆，請搜尋代碼/名稱或使用篩選縮小範圍</div>':'');
   if(cardsEl) cardsEl.scrollTop = scrollY; // 還原捲動位置
-  if(Object.keys(noteMap).length || Object.keys(sharedNoteMap).length) applyNotes(); // 重新套用備註
-  if(Object.keys(strategyMap).length) applyStrategies(); // 重新套用策略
-  if(Object.keys(groupMap).length) applyGroups(); // 重新套用集團標籤
-  if(Object.keys(conceptMap).length) applyConcepts(); // 重新套用概念股標籤
+  applyCardExtras(); // performance: combined single-pass version of applyNotes/applyStrategies/applyGroups/applyConcepts for the hot render() path
+  _positionColResizeHandle(); // 卡片實際內容/捲軸出現後寬度可能改變，重新量一次位置避免把手偏掉
 }
 
 // ── TRADINGVIEW CHART ──
@@ -2237,15 +2380,25 @@ function cardScreenshot(e, el) {
   // 捲到最頂
   window.scrollTo(0, 0);
 
-  // 顯示提示 banner（右下角小按鈕，不蓋卡片）
+  // 截圖模式底部列(bbar)被隱藏了，「返回OO報表」浮動鈕原本是抓bbar上方留的70px位置，
+  // 這時候底下空了一截、鈕會懸空；截圖模式時讓它跟提示banner一起往下貼到底部，離開時再還原原本高度。
+  var reportFab = document.getElementById('report-return-fab');
+  var reportFabHadCustomBottom = false;
+  if (reportFab && reportFab.style.display !== 'none' && getComputedStyle(reportFab).display !== 'none') {
+    reportFabHadCustomBottom = true;
+    reportFab.style.bottom = '14px';
+  }
+
+  // 顯示提示 banner（左下角小按鈕，不蓋卡片）
   var tip = document.createElement('div');
-  tip.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#238636;color:#fff;font-size:14px;padding:10px 24px;border-radius:24px;z-index:9999;font-family:sans-serif;white-space:nowrap;box-shadow:0 4px 16px #0008;cursor:pointer';
+  tip.style.cssText = 'position:fixed;left:14px;bottom:14px;background:#238636;color:#fff;font-size:13px;font-weight:700;width:180px;height:36px;padding:0 12px;border-radius:20px;z-index:9999;font-family:sans-serif;white-space:nowrap;box-shadow:0 2px 10px #0006;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis';
   tip.textContent = '📸 截圖模式　按此離開';
   tip.onclick = function() {
     _screenshotModeOn = false;
     hidden.forEach(function(item) { item.el.style.display = item.disp; });
     document.body.style.paddingTop = savedPadding;
     if (cardsEl2) cardsEl2.style.paddingBottom = savedCardsPadBottom;
+    if (reportFabHadCustomBottom) reportFab.style.bottom = '70px';
     document.body.removeChild(tip);
     // 還原捲動位置
     setTimeout(function(){ window.scrollTo(0, savedScroll); adjustPadding(); }, 30);
@@ -2385,9 +2538,15 @@ function getTVSymbol(code){
   return 'TWSE:'+c;
 }
 
-
 function openChart(e, code, name){
   var txt=code;
+  // 嘗試呼叫XQ內嵌網頁可能提供的原生連動API（目前查無官方文件證實存在，抓不到就靜默略過，
+  // 不影響下面既有的剪貼簿複製流程，兩邊互不衝突，抓到算賺到）
+  try{
+    if(window.XQ && typeof window.XQ.changeSymbol === 'function'){
+      window.XQ.changeSymbol(txt);
+    }
+  }catch(xqErr){}
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(function(){showXqBanner(code,name);}).catch(function(){fallbackCopy(txt,code,name);});
   } else { fallbackCopy(txt,code,name); }
@@ -2767,19 +2926,24 @@ function fetchRealTimePrice(code, cardEl){
     .catch(function(){});
 }
 
-function tvLoad(code, interval){
-  var frameDiv=document.getElementById('yf-frame-'+code);
+function tvLoad(code, interval, opts){
+  // opts.frameId/opts.ns：讓桌面固定圖表面板可以共用這整套抓資料/畫圖/滑動邏輯，
+  // 不用複製一份——沒有傳opts時完全比照原本行為（手機卡片內嵌圖表）。
+  opts = opts || {};
+  var frameId = opts.frameId || ('yf-frame-'+code);
+  var ns = opts.ns || code;
+  var frameDiv=document.getElementById(frameId);
   if(!frameDiv) return;
 
   // 上市+上櫃：統一用 FinMind API Canvas K線
   var dpr=window.devicePixelRatio||1;
   frameDiv.innerHTML=
     '<div style="position:relative;background:var(--bg-page);border-radius:6px;overflow:hidden">'
-    +'<canvas id="kc-'+code+'" style="display:block;width:100%"></canvas>'
-    +'<div id="kl-'+code+'" style="position:absolute;inset:0;display:flex;align-items:center;'
+    +'<canvas id="kc-'+ns+'" style="display:block;width:100%"></canvas>'
+    +'<div id="kl-'+ns+'" style="position:absolute;inset:0;display:flex;align-items:center;'
     +'justify-content:center;color:var(--text-secondary);font-size:13px;background:var(--bg-page);border-radius:6px;">⏳ 載入中...</div>'
     +'</div>';
-  var canvas=document.getElementById('kc-'+code);
+  var canvas=document.getElementById('kc-'+ns);
   function initC(){
     var w=canvas.parentElement.offsetWidth||360;
     canvas.width=w*dpr;
@@ -2789,7 +2953,7 @@ function tvLoad(code, interval){
   }
   initC();
   fetchKData(code, interval, function(data){
-    var ld=document.getElementById('kl-'+code);
+    var ld=document.getElementById('kl-'+ns);
     if(ld) ld.style.display='none';
     if(canvas.width<50*dpr) initC();
     drawKChart(canvas, data);
@@ -3295,6 +3459,92 @@ function getOrCreateStrategyBar(card){
   return bar;
 }
 
+function applyCardExtras(){
+  // 性能優化：將 applyNotes/applyStrategies/applyGroups/applyConcepts 在 render() 裡需要的部分
+  // 合併成一次 querySelectorAll('.card') 掃描，避免每次打字(debounce後)都要對所有卡片跑四逸完整循環。
+  // 這四個原本的 apply* 函式本身仍保留，其他地方(比如資料載入完成後)還是單狨呼叫它們，這裡只是 render() 這個高頻路徑用合併版本。
+  var hasNotes = Object.keys(noteMap).length || Object.keys(sharedNoteMap).length;
+  var hasStrategies = Object.keys(strategyMap).length;
+  var hasGroups = Object.keys(groupMap).length;
+  var hasConcepts = Object.keys(conceptMap).length;
+  if(!hasNotes && !hasStrategies && !hasGroups && !hasConcepts) return;
+  document.querySelectorAll('.card').forEach(function(card){
+    var code = String(card.getAttribute('data-code')||'').trim();
+    if(!code) return;
+
+    if(hasStrategies){
+      var tags = strategyMap[code] || strategyMap[String(parseInt(code))] || [];
+      card.querySelectorAll('.card-strategy-bar > .stag:not(.card-group-badge)').forEach(function(el){ el.remove(); });
+      if(tags && tags.length){
+        var sbar2 = getOrCreateStrategyBar(card);
+        tags.forEach(function(t){
+          var span = document.createElement('span');
+          span.className = 'stag';
+          span.textContent = t;
+          sbar2.appendChild(span);
+        });
+      }
+      var emptyBar = card.querySelector('.card-strategy-bar');
+      if(emptyBar && !emptyBar.children.length) emptyBar.remove();
+    }
+
+    if(hasGroups){
+      var groups=groupMap[code];
+      var existingBadge=card.querySelector('.card-group-badge');
+      if(existingBadge) existingBadge.remove();
+      if(groups && groups.length){
+        var badge=document.createElement('span');
+        badge.className='stag card-group-badge';
+        badge.style.cssText='background:#3a2f1a;color:#d29922;border-color:#d2992255;max-width:100%;overflow:hidden;box-sizing:border-box;';
+        var GROUP_SHOW_MAX=2;
+        var shownGroups=groups.slice(0,GROUP_SHOW_MAX);
+        var extraCount=groups.length-shownGroups.length;
+        badge.innerHTML='🏢 '+shownGroups.map(function(g){
+          var safe=g.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+          return '<span onclick="event.stopPropagation();filterByGroup(\''+safe+'\')">'+g+'</span>';
+        }).join('　')+(extraCount>0?'　<span style="opacity:.75" title="'+groups.slice(GROUP_SHOW_MAX).join('、').replace(/"/g,'&quot;')+'">+'+extraCount+'</span>':'');
+        var gbar=getOrCreateStrategyBar(card);
+        gbar.insertBefore(badge, gbar.firstChild);
+      }
+    }
+
+    if(hasConcepts){
+      var concepts=conceptMap[code];
+      var existingConcept=card.querySelector('.card-concept-bar');
+      if(existingConcept){var pr2=existingConcept.parentNode;existingConcept.remove();if(pr2&&pr2.classList.contains('card-tags-row')&&!pr2.children.length)pr2.remove();}
+      if(concepts && concepts.length){
+        var cbar=document.createElement('div');
+        cbar.className='card-concept-bar';
+        cbar.innerHTML='💡 '+concepts.map(function(g){
+          var safe=g.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+          return '<span onclick="event.stopPropagation();filterByConcept(\''+safe+'\')">'+g+'</span>';
+        }).join('　');
+        getOrCreateTagsRow(card).appendChild(cbar);
+      }
+    }
+
+    if(hasNotes){
+      var note=noteMap[code];
+      var existingNote=card.querySelector('.card-note-bar');
+      if(existingNote)existingNote.remove();
+      if(note){
+        var nbar=document.createElement('div');
+        nbar.className='card-note-bar';
+        nbar.textContent=note;
+        insertCardBar(card, nbar, 'card-note-bar');
+      }
+      var snote=sharedNoteMap[code];
+      var sExisting=card.querySelector('.card-sharednote-bar');
+      if(sExisting)sExisting.remove();
+      if(snote){
+        var sbar=document.createElement('div');
+        sbar.className='card-sharednote-bar';
+        sbar.textContent='💬 '+snote;
+        insertCardBar(card, sbar, 'card-sharednote-bar');
+      }
+    }
+  });
+}
 function applyStrategies(){
   document.querySelectorAll('.card').forEach(function(card){
     var code = String(card.getAttribute('data-code')||'').trim();
@@ -3632,11 +3882,14 @@ function applyGroups(){
     if(groups && groups.length){
       var badge=document.createElement('span');
       badge.className='stag card-group-badge';
-      badge.style.cssText='background:#3a2f1a;color:#d29922;border-color:#d2992255;';
-      badge.innerHTML='🏢 '+groups.map(function(g){
+      badge.style.cssText='background:#3a2f1a;color:#d29922;border-color:#d2992255;max-width:100%;overflow:hidden;box-sizing:border-box;';
+      var GROUP_SHOW_MAX=2; // 手機寬度有限，集團名稱太多會整行溢出被卡片裁切，只先顯示前幾個，剩下的用+N顯示
+      var shownGroups=groups.slice(0,GROUP_SHOW_MAX);
+      var extraCount=groups.length-shownGroups.length;
+      badge.innerHTML='🏢 '+shownGroups.map(function(g){
         var safe=g.replace(/'/g,"\\'").replace(/"/g,'&quot;');
         return '<span onclick="event.stopPropagation();filterByGroup(\''+safe+'\')">'+g+'</span>';
-      }).join('　');
+      }).join('　')+(extraCount>0?'　<span style="opacity:.75" title="'+groups.slice(GROUP_SHOW_MAX).join('、').replace(/"/g,'&quot;')+'">+'+extraCount+'</span>':'');
       var bar=getOrCreateStrategyBar(card);
       bar.insertBefore(badge, bar.firstChild); // 集團永遠排在策略標籤最前面
     }
@@ -4213,6 +4466,7 @@ function jumpFromMarginReport(code){
     toggleClear(code);
   }
   window.scrollTo({top:0, behavior:'smooth'});
+  _showReportReturnFab('返回融資維持率', openMarginReport);
 }
 
 // ============================================================
@@ -4233,7 +4487,7 @@ var _dahuRotationLastNodes = null;
 var _dahuRotationMode = 'group'; // 'group'=族群檢視（泡泡） / 'stock'=個股檢視（每檔股票一個點）
 
 function openDahuRotationBoard(){
-  toast('🧭 開啟大戶籌碼族群輪動圖...','#1f6feb');
+  _hideReportReturnFab();
   try{
     // 保險：把其他可能還開著的全螢幕視窗都關掉，避免疊在一起互相蓋住
     ['settings-modal','margin-report-modal','macro-board-modal','econ-calendar-modal','note-edit-modal'].forEach(function(id){
@@ -4241,20 +4495,13 @@ function openDahuRotationBoard(){
       if(el) el.style.display = 'none';
     });
     var modal = document.getElementById('dahu-rotation-modal');
-    if(!modal){ toast('❌ 找不到大戶籌碼族群輪動圖的視窗元素','#da3633'); return; }
+    if(!modal){ toast('❌ 找不到大戶籌碼趨勢表的視窗元素','#da3633'); return; }
     document.getElementById('dahu-rotation-detail').style.display = 'none';
-    _dahuRotationMode = 'group';
-    _dahuSetModeButtons('group');
-    var wrap0 = document.getElementById('dahu-rotation-canvas-wrap'), list0 = document.getElementById('dahu-rotation-list'), legend0 = document.getElementById('dahu-rotation-legend');
-    if(wrap0) wrap0.style.display = 'block';
-    if(list0) list0.style.display = 'none';
-    if(legend0) legend0.style.display = 'block'; // 列表模式不需要這段四象限說明，圖表模式(族群/個股)才顯示
     modal.style.display = 'flex';
     modal.style.zIndex = '100000';
-    _dahuSetupChartGestures();
-    renderDahuRotationChart();
+    _renderDahuGroupView();
   }catch(e){
-    toast('❌ 大戶籌碼族群輪動圖發生錯誤：'+e.message,'#da3633');
+    toast('❌ 大戶籌碼趨勢表發生錯誤：'+e.message,'#da3633');
     console.error('openDahuRotationBoard error:', e);
   }
 }
@@ -4353,100 +4600,81 @@ function _computeDahuRotationGroups(){
 }
 
 // 三個模式共用的按鈕高亮邏輯：被選到的那顆變藍底白字，其餘變回預設樣式
-function _dahuSetModeButtons(mode){
-  var ids = {group:'dahu-mode-group-btn', stock:'dahu-mode-stock-btn', list:'dahu-mode-list-btn'};
-  Object.keys(ids).forEach(function(k){
-    var b = document.getElementById(ids[k]);
-    if(!b) return;
-    if(k === mode){ b.style.background = '#1f6feb'; b.style.border = 'none'; b.style.color = '#fff'; }
-    else { b.style.background = 'var(--bg-panel-alt)'; b.style.border = '1px solid var(--border)'; b.style.color = 'var(--text-secondary)'; }
-  });
+// 個股列表的單列/表頭樣板，列表模式(四區都顯示)、族群檢視新版(點卡片顯示單一象限)共用，避免兩邊各刻一份樣式跑掉
+// 卡片式雙行列樣板：字級跟卡片本體看齊（代碼/商品/現價都比照卡片放大），
+// 一行塞不下這麼多欄位所以拆兩行，上排是代碼+商品+漲跌%，下排是股價/昨收+大戶買賣比/差比徽章
+function _dahuStockRowHtml(s){
+  var bc = _dahuValColor(s.dahubuy, 'buy');
+  var cc = _dahuValColor(s.dahuchai, 'chai');
+  var pctStr = s.pct!==null&&s.pct!==undefined ? ((s.pct>0?'+':'')+s.pct.toFixed(1)+'%') : '--';
+  var pctColor = s.pct>0?'#f85149':s.pct<0?'#3fb950':'var(--text-secondary)';
+  // s.volume是這份資料裡實際存「現價」的欄位（Excel「成交」欄，命名沿用舊卡片邏輯），s.close才是昨收
+  var priceStr = s.volume!==null&&s.volume!==undefined ? s.volume.toFixed(1) : '--';
+  var prevCloseStr = s.close!==null&&s.close!==undefined ? s.close.toFixed(1) : '--';
+  // 跟卡片本體同一套現價顏色邏輯：現價比昨收高顯示紅色、低顯示綠色
+  var priceColor = (s.volume!==null&&s.volume!==undefined&&s.close!==null&&s.close!==undefined) ? (s.volume>s.close?'#f85149':s.volume<s.close?'#3fb950':'var(--text-primary)') : 'var(--text-primary)';
+  return '<div onclick="jumpFromDahuRotation(\''+s.code+'\')" style="padding:10px 8px;border-bottom:1px solid var(--border);cursor:pointer;">'
+    +'<div style="display:flex;align-items:baseline;gap:8px;">'
+      +'<span style="color:#79c0ff;font-family:monospace;font-size:19.5px;font-weight:700;flex-shrink:0;">'+s.code+'</span>'
+      +'<span style="color:var(--text-primary);font-size:16px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+s.name+'</span>'
+      +(s.position?'<span style="font-size:12px;color:var(--text-altlight);font-weight:500;flex-shrink:1;min-width:0;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+s.position+'</span>':'')
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-top:5px;">'
+      +'<span style="font-size:13px;color:'+priceColor+';font-weight:700;flex-shrink:0;">'+priceStr+'</span>'
+      +'<span style="font-size:12px;color:var(--text-dim);flex-shrink:0;">昨收 '+prevCloseStr+'</span>'
+      +'<span style="font-size:12px;font-weight:700;flex-shrink:0;color:'+pctColor+';">'+pctStr+'</span>'
+      +'<span style="flex:1;"></span>'
+      +'<span style="font-size:12px;font-weight:700;flex-shrink:0;padding:3px 7px;border-radius:5px;background:'+bc.bg+';color:'+bc.fg+';">買賣比 '+(s.dahubuy!==null&&s.dahubuy!==undefined?s.dahubuy.toFixed(0):'--')+'</span>'
+      +'<span style="font-size:12px;font-weight:700;flex-shrink:0;padding:3px 7px;border-radius:5px;background:'+cc.bg+';color:'+cc.fg+';">差比 '+(s.dahuchai!==null&&s.dahuchai!==undefined?((s.dahuchai>0?'+':'')+s.dahuchai.toFixed(0)):'--')+'</span>'
+    +'</div>'
+  +'</div>';
 }
-
-function switchDahuRotationMode(mode){
-  if(_dahuRotationMode === mode) return;
-  _dahuRotationMode = mode;
-  document.getElementById('dahu-rotation-detail').style.display = 'none';
-  _dahuSetModeButtons(mode);
-  var wrap = document.getElementById('dahu-rotation-canvas-wrap');
-  var listEl = document.getElementById('dahu-rotation-list');
-  var legendEl = document.getElementById('dahu-rotation-legend');
-  if(mode === 'list'){
-    wrap.style.display = 'none';
-    listEl.style.display = 'block';
-    if(legendEl) legendEl.style.display = 'none'; // 列表本身欄位就很清楚了，不用再重複顯示四象限說明
-    _dahuFreeCanvasDeferred(); // 切到列表模式canvas會被藏起來，順便釋放記憶體
-    renderDahuRotationList();
-  } else {
-    listEl.style.display = 'none';
-    wrap.style.display = 'block';
-    if(legendEl) legendEl.style.display = 'block';
-    renderDahuRotationChart();
+function _dahuStockListHeaderHtml(){
+  return ''; // 雙行卡片式版面每個數字旁邊都有自己的文字標籤，不用再另外放一列表頭
+}
+// ── 族群檢視新版：左邊(手機版上方)四張可點的統計卡片，右邊(手機版下方)是選中那個象限的個股列表 ──
+var _dahuActiveQuad = null;
+var DAHU_QUAD_CAP = {}; // 使用者要求全部顯示，不再限制筆數
+function _renderDahuGroupView(){
+  _renderDahuQuadStats();
+  var stocks = _computeDahuRotationAllStocks();
+  var order = ['領先','改善','弱化','落後'];
+  var valid = _dahuActiveQuad && stocks.some(function(s){ return _dahuStockQuadrant(s.dahubuy, s.dahuchai).label === _dahuActiveQuad; });
+  if(!valid){
+    // 預設選第一個有資料的象限，都沒有資料就選領先（會顯示空狀態文字）
+    _dahuActiveQuad = order.filter(function(k){
+      return stocks.some(function(s){ return _dahuStockQuadrant(s.dahubuy, s.dahuchai).label === k; });
+    })[0] || '領先';
   }
+  _renderDahuQuadStats(); // 套用選中樣式
+  _renderDahuGroupStockList(_dahuActiveQuad);
 }
-
-// 列表模式：跟個股散點圖同一批股票（依成交值取前N檔），改成依「領先／改善／弱化／落後」
-// 四個象限分段列出，比散點圖更適合快速掃過名字、抓出誰在哪一區
-function renderDahuRotationList(){
-  var listEl = document.getElementById('dahu-rotation-list');
-  var stocks = _computeDahuRotationAllStocks(); // 列表不設成交值上限，見上方註解
+function _selectDahuQuadCard(label){
+  _dahuActiveQuad = label;
+  _renderDahuQuadStats();
+  _renderDahuGroupStockList(label);
+}
+function _renderDahuGroupStockList(label){
+  var wrap = document.getElementById('dahu-group-stock-list');
+  if(!wrap) return;
+  var stocks = _computeDahuRotationAllStocks().filter(function(s){
+    return _dahuStockQuadrant(s.dahubuy, s.dahuchai).label === label;
+  });
   if(!stocks.length){
-    listEl.innerHTML = '<div style="padding:32px 12px;text-align:center;color:var(--text-secondary);font-size:13px;">尚無資料，請先載入選股Excel</div>';
+    wrap.innerHTML = '<div style="padding:32px 12px;text-align:center;color:var(--text-secondary);font-size:13px;">這一區目前沒有股票，請先載入選股Excel或換一個分類看看</div>';
     return;
   }
-  var buckets = {'領先':[], '改善':[], '弱化':[], '落後':[]};
-  stocks.forEach(function(s){
-    var q = _dahuStockQuadrant(s.dahubuy, s.dahuchai);
-    if(buckets[q.label]) buckets[q.label].push(s);
-  });
-  Object.keys(buckets).forEach(function(k){
-    buckets[k].sort(function(a,b){ return (b.dahuchai||0)-(a.dahuchai||0); });
-  });
-  var sectionDefs = [
-    {key:'領先', title:'🟢 領先區(強勢主流)', fg:'#3fb950', capAt:null},
-    {key:'改善', title:'🔵 改善區(籌碼改善中)', fg:'#58a6ff', capAt:null},
-    {key:'弱化', title:'🟠 弱化區(資金退潮)', fg:'#d29922', capAt:null},
-    {key:'落後', title:'⚪ 落後區(弱勢觀望)', fg:'var(--text-secondary)', capAt:40} // 落後區通常佔絕大多數個股、也最不需要逐檔細看，只顯示成交值前40檔避免整個列表被灌爆
-  ];
-  var html = sectionDefs.map(function(sec){
-    var rows = buckets[sec.key];
-    if(!rows.length){
-      return '<div style="margin-bottom:14px;">'
-        +'<div style="font-size:13px;font-weight:700;color:'+sec.fg+';padding:8px 6px;background:'+sec.fg+'18;border-radius:6px;">'+sec.title+'（0）</div>'
-        +'<div style="padding:10px 6px;font-size:12px;color:var(--text-dim);">目前沒有股票落在這一區</div>'
-      +'</div>';
-    }
-    var shown = rows;
-    var hiddenCount = 0;
-    if(sec.capAt && rows.length > sec.capAt){
-      shown = rows.slice().sort(function(a,b){ return (b.turnval||0)-(a.turnval||0); }).slice(0, sec.capAt);
-      shown.sort(function(a,b){ return (b.dahuchai||0)-(a.dahuchai||0); });
-      hiddenCount = rows.length - shown.length;
-    }
-    var rowsHtml = shown.map(function(s){
-      var bc = _dahuValColor(s.dahubuy, 'buy');
-      var cc = _dahuValColor(s.dahuchai, 'chai');
-      var pctStr = s.pct!==null&&s.pct!==undefined ? ((s.pct>0?'+':'')+s.pct.toFixed(1)+'%') : '--';
-      var pctColor = s.pct>0?'#f85149':s.pct<0?'#3fb950':'var(--text-secondary)';
-      return '<div onclick="jumpFromDahuRotation(\''+s.code+'\')" style="display:flex;align-items:center;gap:6px;padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer;">'
-        +'<span style="color:var(--text-secondary);font-family:monospace;font-size:11px;flex-shrink:0;width:42px;">'+s.code+'</span>'
-        +'<span style="color:var(--text-primary);font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+s.name+'</span>'
-        +'<span style="font-size:11px;flex-shrink:0;width:52px;text-align:right;color:'+pctColor+'">'+pctStr+'</span>'
-        +'<span style="font-size:11px;font-weight:700;flex-shrink:0;padding:2px 5px;border-radius:4px;background:'+bc.bg+';color:'+bc.fg+';width:44px;text-align:center;">'+(s.dahubuy!==null&&s.dahubuy!==undefined?s.dahubuy.toFixed(0):'--')+'</span>'
-        +'<span style="font-size:11px;font-weight:700;flex-shrink:0;padding:2px 5px;border-radius:4px;background:'+cc.bg+';color:'+cc.fg+';width:44px;text-align:center;">'+(s.dahuchai!==null&&s.dahuchai!==undefined?((s.dahuchai>0?'+':'')+s.dahuchai.toFixed(0)):'--')+'</span>'
-      +'</div>';
-    }).join('');
-    return '<div style="margin-bottom:14px;">'
-      +'<div style="font-size:13px;font-weight:700;color:'+sec.fg+';padding:8px 6px;background:'+sec.fg+'18;border-radius:6px;margin-bottom:2px;">'+sec.title+'（'+rows.length+'）</div>'
-      +'<div style="display:flex;align-items:center;gap:6px;padding:0 6px 4px;font-size:10px;color:var(--text-dim);">'
-        +'<span style="width:42px;flex-shrink:0;">代碼</span><span style="flex:1;">商品</span><span style="width:52px;flex-shrink:0;text-align:right;">漲跌%</span>'
-        +'<span style="width:44px;flex-shrink:0;text-align:center;">買賣比</span><span style="width:44px;flex-shrink:0;text-align:center;">差比</span>'
-      +'</div>'
-      + rowsHtml
-      + (hiddenCount>0 ? '<div style="padding:8px 6px;font-size:11px;color:var(--text-dim);text-align:center;">（僅顯示成交值前'+sec.capAt+'檔，還有'+hiddenCount+'檔未列出）</div>' : '')
-    +'</div>';
-  }).join('');
-  listEl.innerHTML = html || '<div style="padding:32px 12px;text-align:center;color:var(--text-secondary);font-size:13px;">尚無資料</div>';
+  stocks.sort(function(a,b){ return (b.dahuchai||0)-(a.dahuchai||0); });
+  var capAt = DAHU_QUAD_CAP[label] || null;
+  var shown = stocks, hiddenCount = 0;
+  if(capAt && stocks.length > capAt){
+    shown = stocks.slice().sort(function(a,b){ return (b.turnval||0)-(a.turnval||0); }).slice(0, capAt);
+    shown.sort(function(a,b){ return (b.dahuchai||0)-(a.dahuchai||0); });
+    hiddenCount = stocks.length - shown.length;
+  }
+  wrap.innerHTML = _dahuStockListHeaderHtml()
+    + shown.map(_dahuStockRowHtml).join('')
+    + (hiddenCount>0 ? '<div style="padding:8px 6px;font-size:11px;color:var(--text-dim);text-align:center;">（僅顯示成交值前'+capAt+'檔，還有'+hiddenCount+'檔未列出）</div>' : '');
 }
 
 // 個股散點圖：不分族群，把每一檔有大戶買賣比/差比資料的個股直接攤開成一個個點，
@@ -4463,6 +4691,34 @@ function _computeDahuRotationAllStocks(){
   return (D||[]).filter(function(s){
     return s.dahubuy!==null && s.dahubuy!==undefined && s.dahuchai!==null && s.dahuchai!==undefined;
   });
+}
+
+// 族群檢視上方的四象限統計卡片（參考Tide潮汐左側漲潮/輪動/觀望/退潮那組卡片的排法，
+// 換成我們自己這套領先/改善/弱化/落後的籌碼分區統計，一眼看出目前整體大戶籌碼氣氛）
+var DAHU_QUAD_STAT_DEFS = [
+  {key:'領先', sub:'強勢主流', desc:'買賣比≥70%<br>差比≥20%', color:'#3fb950', bg:'#3fb95015'},
+  {key:'改善', sub:'籌碼改善中', desc:'買賣比<70%<br>差比≥20%', color:'#58a6ff', bg:'#1f6feb15'},
+  {key:'弱化', sub:'資金退潮', desc:'買賣比≥70%<br>差比<20%', color:'#d29922', bg:'#d2992215'},
+  {key:'落後', sub:'弱勢觀望', desc:'買賣比<70%<br>差比<20%', color:'var(--text-secondary)', bg:'var(--bg-panel-alt)'}
+];
+function _renderDahuQuadStats(){
+  var wrap = document.getElementById('dahu-quad-stats');
+  if(!wrap) return;
+  var stocks = _computeDahuRotationAllStocks();
+  var counts = {'領先':0, '改善':0, '弱化':0, '落後':0};
+  stocks.forEach(function(s){
+    var q = _dahuStockQuadrant(s.dahubuy, s.dahuchai);
+    if(counts.hasOwnProperty(q.label)) counts[q.label]++;
+  });
+  wrap.innerHTML = DAHU_QUAD_STAT_DEFS.map(function(d){
+    var active = _dahuActiveQuad === d.key;
+    return '<div onclick="_selectDahuQuadCard(\''+d.key+'\')" style="cursor:pointer;background:'+d.bg+';border:1.5px solid '+(active?d.color:'var(--border)')+';border-radius:9px;padding:8px 4px;transition:border-color .15s;text-align:center;">'
+      +'<div style="font-size:12px;color:'+d.color+';font-weight:700;">'+d.key+'</div>'
+      +'<div style="font-size:9px;color:'+d.color+';opacity:0.85;margin-top:1px;">'+d.sub+'</div>'
+      +'<div style="font-size:20px;font-weight:800;color:'+d.color+';line-height:1.3;margin-top:2px;">'+counts[d.key]+'</div>'
+      +'<div style="font-size:9px;color:var(--text-secondary);margin-top:3px;line-height:1.4;padding-top:3px;border-top:1px solid '+d.color+'33;">'+d.desc+'</div>'
+    +'</div>';
+  }).join('');
 }
 
 function renderDahuRotationChart(){
@@ -5079,6 +5335,24 @@ function jumpFromDahuRotation(code){
     toggleClear(code);
   }
   window.scrollTo({top:0, behavior:'smooth'});
+  _showReportReturnFab('返回大戶籌碼', openDahuRotationBoard);
+}
+function _showReportReturnFab(label, fn){
+  _reportReturnPending = true;
+  _reportReturnFn = fn;
+  var el = document.getElementById('report-return-fab');
+  if(el){ el.textContent = '↩ '+label; el.style.display = 'flex'; }
+}
+function _hideReportReturnFab(){
+  _reportReturnPending = false;
+  _reportReturnFn = null;
+  var el = document.getElementById('report-return-fab');
+  if(el) el.style.display = 'none';
+}
+function _reportReturnClick(){
+  var fn = _reportReturnFn;
+  _hideReportReturnFab();
+  if(fn) fn();
 }
 // 市場參考看板：原油／美元指數／VIX／美債殖利率，透過 Apps Script 代理 Yahoo Finance
 var MACRO_LABELS = {
@@ -5172,6 +5446,7 @@ function fetchMacroBoard(){
     });
 }
 function openMarginReport(){
+  _hideReportReturnFab();
   document.getElementById('settings-modal').style.display = 'none';
   var groups = {};
   D.forEach(function(s){
@@ -5372,6 +5647,7 @@ function fetchAttentionData(){
 }
 
 function openDisposalReport(){
+  _hideReportReturnFab();
   document.getElementById('settings-modal').style.display = 'none';
   var body = document.getElementById('disposal-report-body');
   var disposalList = D.filter(function(s){ return s.disposal; });
@@ -5429,6 +5705,7 @@ function jumpFromDisposalReport(code){
     toggleClear(code);
   }
   window.scrollTo({top:0, behavior:'smooth'});
+  _showReportReturnFab('返回處置股', openDisposalReport);
 }
 
 // ══════════ 股價合理性一鍵評估 ══════════
@@ -6018,6 +6295,95 @@ window.addEventListener('load', function(){
   autoLoadLatestStockFile();
 });
 window.addEventListener('resize', adjustPadding);
+
+// ── 欄寬拖曳把手（桌機兩欄檢視，中間欄縫，參考Tide潮汐：拖曳調整寬度、雙擊還原預設） ──
+var _colSplit = parseFloat(localStorage.getItem('cardsColSplit')) || 50; // 左欄佔比%
+var _crDragging = false, _crStartX = 0, _crStartSplit = 50;
+function _applyColSplit(pct){
+  pct = Math.max(25, Math.min(75, pct));
+  _colSplit = pct;
+  try{ localStorage.setItem('cardsColSplit', pct); }catch(e){}
+  _syncColSplitToDOM();
+}
+// 手機是單欄(1fr)，桌機才是可拖曳的兩欄比例；用grid的百分比欄寬不會自動扣掉欄縫(gap)，
+// 兩欄用百分比各佔一半時實際會比容器寬「多」一個gap，導致中間把手位置跟卡片真正的縫隙對不齊，
+// 所以改用calc()，欄寬先扣掉gap再依比例分配，並用.cards實際量到的位置精準算出縫隙中心點。
+function _syncColSplitToDOM(){
+  var cardsEl = document.getElementById('cards');
+  if(!cardsEl) return;
+  if(window.innerWidth < 640){
+    cardsEl.style.gridTemplateColumns = ''; // 交還給CSS控制（單欄1fr），避免JS設的inline樣式蓋掉手機版面
+  } else {
+    var cs = getComputedStyle(cardsEl);
+    var gap = parseFloat(cs.columnGap || cs.gap) || 0;
+    cardsEl.style.gridTemplateColumns = 'calc((100% - '+gap+'px) * '+(_colSplit/100)+') calc((100% - '+gap+'px) * '+((100-_colSplit)/100)+')';
+  }
+  _positionColResizeHandle();
+}
+function _positionColResizeHandle(){
+  var handle = document.getElementById('col-resize-handle');
+  var cardsEl = document.getElementById('cards');
+  if(!handle || !cardsEl) return;
+  if(window.innerWidth < 640){ handle.classList.remove('on'); return; }
+  handle.classList.add('on');
+  var rect = cardsEl.getBoundingClientRect();
+  var cs = getComputedStyle(cardsEl);
+  var padL = parseFloat(cs.paddingLeft) || 0;
+  var padR = parseFloat(cs.paddingRight) || 0;
+  var gap = parseFloat(cs.columnGap || cs.gap) || 0;
+  var contentW = rect.width - padL - padR;
+  var col1W = (contentW - gap) * (_colSplit/100);
+  var gapCenterX = rect.left + padL + col1W + gap/2;
+  handle.style.left = gapCenterX + 'px';
+  // 垂直範圍跟著.cards實際可視區走（把下方懸浮的.bbar高度扣掉），這樣把手才會真正上下置中在卡片區域，
+  // 而不是置中在含被bbar蓋住那段空白的整個視窗高度
+  var bbar = document.getElementById('bbar');
+  var bbarH = bbar ? bbar.getBoundingClientRect().height : 0;
+  handle.style.top = rect.top + 'px';
+  handle.style.bottom = bbarH + 'px';
+}
+function _crGripDown(e){
+  e.preventDefault(); e.stopPropagation();
+  _crDragging = true;
+  var grip = document.getElementById('col-resize-grip');
+  if(grip) grip.classList.add('dragging');
+  _crStartX = (e.touches ? e.touches[0].clientX : e.clientX);
+  _crStartSplit = _colSplit;
+  document.addEventListener('mousemove', _crGripMove);
+  document.addEventListener('mouseup', _crGripUp);
+  document.addEventListener('touchmove', _crGripMove, {passive:false});
+  document.addEventListener('touchend', _crGripUp);
+}
+function _crGripMove(e){
+  if(!_crDragging) return;
+  e.preventDefault();
+  var cardsEl = document.getElementById('cards');
+  if(!cardsEl) return;
+  var x = (e.touches ? e.touches[0].clientX : e.clientX);
+  var dx = x - _crStartX;
+  var w = cardsEl.clientWidth || window.innerWidth;
+  if(!w) return;
+  var deltaPct = (dx / w) * 100;
+  _applyColSplit(_crStartSplit + deltaPct);
+}
+function _crGripUp(){
+  _crDragging = false;
+  var grip = document.getElementById('col-resize-grip');
+  if(grip) grip.classList.remove('dragging');
+  document.removeEventListener('mousemove', _crGripMove);
+  document.removeEventListener('mouseup', _crGripUp);
+  document.removeEventListener('touchmove', _crGripMove);
+  document.removeEventListener('touchend', _crGripUp);
+}
+function _crGripReset(){
+  _applyColSplit(50);
+  // 保險：雙擊還原後強制重新定位一次把手，避免極少數情況下量測到過期的版面資訊導致把手消失
+  requestAnimationFrame(function(){ _positionColResizeHandle(); });
+}
+(function(){
+  _syncColSplitToDOM();
+  window.addEventListener('resize', _syncColSplitToDOM);
+})();
 </script>
 </body>
 </html>

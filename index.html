@@ -171,7 +171,7 @@ canvas{display:block;max-width:100%;height:auto;touch-action:none}
         <li><b>＋</b> 自訂顏色，右鍵刪除</li>
       </ul>
     </details>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v2.3</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v2.4</span></div>
   </section>
 </aside>
 
@@ -247,7 +247,12 @@ async function takeShot(){
   commitText();
   try{
     if(!shotStream){
-      shotStream=await navigator.mediaDevices.getDisplayMedia({video:{cursor:'never'},audio:false,selfBrowserSurface:'exclude',surfaceSwitching:'include'});
+      // CaptureController：按完分享後留在截圖板，不跳到被截的分頁或視窗
+      const ctl=('CaptureController' in window)?new CaptureController():null;
+      const opt={video:{cursor:'never'},audio:false,selfBrowserSurface:'exclude',surfaceSwitching:'include'};if(ctl)opt.controller=ctl;
+      shotStream=await navigator.mediaDevices.getDisplayMedia(opt);
+      try{ctl?.setFocusBehavior('no-focus-change')}catch(e){}
+      setTimeout(()=>window.focus(),0);
       shotStream.getVideoTracks()[0].addEventListener('ended',stopShot);
       shotVideo=document.createElement('video');shotVideo.muted=true;shotVideo.playsInline=true;shotVideo.srcObject=shotStream;
       await shotVideo.play();await new Promise(r=>setTimeout(r,350));

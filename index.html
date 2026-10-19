@@ -109,8 +109,22 @@ canvas{display:block;max-width:100%;height:auto;touch-action:none}
       <button id="shot" class="primary" title="擷取螢幕畫面 (S)">⛶ 截圖 <kbd>S</kbd></button>
       <button id="open" class="ghost" title="開啟電腦裡的圖檔">開啟圖檔</button>
     </div>
-    <button id="stopShot" class="ghost" hidden title="停止分享畫面">■ 停止分享畫面</button>
     <input id="file" type="file" accept="image/*" hidden>
+  </section>
+
+  <section class="sec">
+    <h2>輸出</h2>
+    <button id="copy" class="primary" style="justify-content:center">複製圖片 <kbd>Ctrl+C</kbd></button>
+    <button id="save" class="ghost" style="justify-content:center">另存圖片</button>
+  </section>
+
+  <section class="sec">
+    <h2>編輯</h2>
+    <div class="row">
+      <button id="undo" class="ghost" title="復原 Ctrl+Z">↶ 復原</button>
+      <button id="redo" class="ghost" title="重做 Ctrl+Y">↷ 重做</button>
+    </div>
+    <button id="clear" class="ghost" title="清除所有標註，保留圖片">清除所有標註</button>
   </section>
 
   <section class="sec">
@@ -145,34 +159,19 @@ canvas{display:block;max-width:100%;height:auto;touch-action:none}
     <label class="field" for="fsize">字級 <input id="fsize" type="range" min="12" max="72" value="26"></label>
   </section>
 
-  <section class="sec">
-    <h2>編輯</h2>
-    <div class="row">
-      <button id="undo" class="ghost" title="復原 Ctrl+Z">↶ 復原</button>
-      <button id="redo" class="ghost" title="重做 Ctrl+Y">↷ 重做</button>
-    </div>
-    <button id="clear" class="ghost" title="清除所有標註，保留圖片">清除所有標註</button>
-  </section>
-
-  <section class="sec">
-    <h2>輸出</h2>
-    <button id="copy" class="primary" style="justify-content:center">複製圖片 <kbd>Ctrl+C</kbd></button>
-    <button id="save" class="ghost" style="justify-content:center">另存圖片</button>
-  </section>
-
   <section class="sec foot" id="hint">
     <details>
       <summary>操作提示</summary>
       <ul>
         <li><b>Ctrl+V</b> 貼上截圖，或拖曳圖檔進來</li>
-        <li><b>截圖</b> 第一次選視窗，之後每按一次抓當下畫面</li>
+        <li><b>截圖</b> 選好視窗就截下來，並自動停止分享</li>
         <li><b>Shift</b> 拉水平線、正方形、正圓</li>
         <li><b>Delete</b> 刪除最後一筆</li>
         <li><b>點編號</b> 修改數字或字母</li>
         <li><b>＋</b> 自訂顏色，右鍵刪除</li>
       </ul>
     </details>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v1.8</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v2.3</span></div>
   </section>
 </aside>
 
@@ -241,8 +240,8 @@ function loadFile(f){if(!f||!f.type.startsWith('image/'))return toast('這不是
 window.addEventListener('paste',e=>{const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(it){e.preventDefault();loadFile(it.getAsFile())}else toast('剪貼簿裡沒有圖片，先用 Win+Shift+S 截圖')});
 $('open').onclick=$('open2').onclick=()=>$('file').click();
 // ---- 螢幕截圖：第一次選要擷取的視窗或螢幕，之後每按一次就抓當下畫面 ----
-let shotStream=null,shotVideo=null;
-function stopShot(){shotStream?.getTracks().forEach(t=>t.stop());shotStream=null;shotVideo=null;$('stopShot').hidden=true}
+let shotStream=null,shotVideo=null,shotTimer=null;
+function stopShot(){clearTimeout(shotTimer);shotStream?.getTracks().forEach(t=>t.stop());shotStream=null;shotVideo=null}
 async function takeShot(){
   if(!navigator.mediaDevices?.getDisplayMedia)return toast('這個瀏覽器不支援截圖，請改用 Win+Shift+S');
   commitText();
@@ -251,15 +250,16 @@ async function takeShot(){
       shotStream=await navigator.mediaDevices.getDisplayMedia({video:{cursor:'never'},audio:false,selfBrowserSurface:'exclude',surfaceSwitching:'include'});
       shotStream.getVideoTracks()[0].addEventListener('ended',stopShot);
       shotVideo=document.createElement('video');shotVideo.muted=true;shotVideo.playsInline=true;shotVideo.srcObject=shotStream;
-      await shotVideo.play();await new Promise(r=>setTimeout(r,350));$('stopShot').hidden=false;
+      await shotVideo.play();await new Promise(r=>setTimeout(r,350));
     }
     const v=shotVideo,c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
     if(!c.width)throw new Error('empty');
     c.getContext('2d').drawImage(v,0,0);
+    stopShot(); // 截完立刻停止分享
     loadImg(c.toDataURL('image/png'),()=>{setTool('crop');toast('已截圖，拖曳框選要保留的範圍')});
   }catch(e){if(e&&e.name==='NotAllowedError'){stopShot();toast('已取消截圖')}else{stopShot();toast('無法截圖，請改用 Win+Shift+S 再按 Ctrl+V')}}
 }
-$('shot').onclick=$('shot2').onclick=takeShot;$('stopShot').onclick=()=>{stopShot();toast('已停止分享畫面')};$('file').onchange=e=>{loadFile(e.target.files[0]);e.target.value=''};
+$('shot').onclick=$('shot2').onclick=takeShot;window.addEventListener('pagehide',stopShot);$('file').onchange=e=>{loadFile(e.target.files[0]);e.target.value=''};
 const st=$('stage');
 st.addEventListener('dragover',e=>{e.preventDefault();st.classList.add('drop')});
 st.addEventListener('dragleave',()=>st.classList.remove('drop'));

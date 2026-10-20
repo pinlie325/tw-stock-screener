@@ -72,6 +72,9 @@ kbd{font-family:var(--mono);font-size:10px;opacity:.6}
 #numStart{width:3.4em;font:inherit;font-size:13px;text-align:center;padding:5px 4px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
 .numrow button{margin-left:auto}
 
+.auto{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer}
+.auto input{margin:0;accent-color:var(--accent)}
+#autoState{margin-left:auto;font-size:11px;color:var(--accent)}
 .foot{margin-top:auto;font-size:11.5px;color:var(--muted);line-height:1.7}
 .foot details summary{cursor:pointer;color:var(--fg);font-size:12px;list-style:none}
 .foot details summary::before{content:"▸ ";color:var(--muted)}
@@ -116,6 +119,7 @@ canvas{display:block;max-width:100%;height:auto;touch-action:none}
     <h2>輸出</h2>
     <button id="copy" class="primary" style="justify-content:center">複製圖片 <kbd>Ctrl+C</kbd></button>
     <button id="save" class="ghost" style="justify-content:center">另存圖片</button>
+    <label class="auto" for="autoCopy"><input id="autoCopy" type="checkbox" checked> 自動複製<span id="autoState"></span></label>
   </section>
 
   <section class="sec">
@@ -167,13 +171,14 @@ canvas{display:block;max-width:100%;height:auto;touch-action:none}
         <li><b>Ctrl+V</b> 貼上截圖，或拖曳圖檔進來</li>
         <li><b>截圖</b> 選好視窗就截下來，並自動停止分享</li>
         <li><b>馬賽克</b> 拖曳框選要遮住的地方，格子大小跟著「粗細」</li>
+        <li><b>自動複製</b> 打勾後每次修改完會自動複製，切到 Claude 直接 Ctrl+V</li>
         <li><b>Shift</b> 拉水平線、正方形、正圓</li>
         <li><b>Delete</b> 刪除最後一筆</li>
         <li><b>點編號</b> 修改數字或字母</li>
         <li><b>＋</b> 自訂顏色，右鍵刪除</li>
       </ul>
     </details>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v2.5</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v2.6</span></div>
   </section>
 </aside>
 
@@ -324,7 +329,7 @@ function drawShape(c,s){c.save();c.strokeStyle=c.fillStyle=s.color;c.lineWidth=s
     c.fillStyle=light(s.color)?'#000':'#fff';const L=String(s.n).length;c.font=`700 ${r*(L<=1?1.15:L===2?.95:.7)}px ${getComputedStyle(document.body).fontFamily}`;c.textAlign='center';c.textBaseline='middle';c.fillText(s.n,s.x,s.y+r*.05)}
   c.restore()}
 function render(c){c.drawImage(base,0,0);shapes.forEach(s=>drawShape(c,s))}
-function draw(){syncNum();if(!base)return;ctx.clearRect(0,0,cv.width,cv.height);render(ctx);if(cur)drawShape(ctx,cur);
+function draw(){syncNum();if(!base)return;queueAuto();ctx.clearRect(0,0,cv.width,cv.height);render(ctx);if(cur)drawShape(ctx,cur);
   if(crop){const x=Math.min(crop.x1,crop.x2),y=Math.min(crop.y1,crop.y2),w=Math.abs(crop.x2-crop.x1),h=Math.abs(crop.y2-crop.y1);
     ctx.save();ctx.fillStyle='rgba(0,0,0,.5)';ctx.beginPath();ctx.rect(0,0,cv.width,cv.height);ctx.rect(x,y,w,h);ctx.fill('evenodd');
     ctx.setLineDash([8*scaleK(),6*scaleK()]);ctx.strokeStyle='#fff';ctx.lineWidth=2*scaleK();ctx.strokeRect(x,y,w,h);
@@ -388,7 +393,17 @@ window.addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target
 
 // ---- 匯出 ----
 function exportCanvas(){commitText();if(!base){toast('請先貼上圖片');return null}const c=document.createElement('canvas');c.width=base.width;c.height=base.height;render(c.getContext('2d'));return c}
-async function copyImg(){const c=exportCanvas();if(!c)return;try{const blob=await new Promise(r=>c.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast('已複製，可直接貼到 LINE / Word')}
+// ---- 自動複製：每次修改後 0.6 秒自動把完成圖放進剪貼簿，切到 Claude / LINE 直接 Ctrl+V ----
+let autoT=null;
+try{const v=localStorage.getItem('annot.autoCopy');if(v!==null)$('autoCopy').checked=v==='1'}catch(e){}
+$('autoCopy').addEventListener('change',e=>{try{localStorage.setItem('annot.autoCopy',e.target.checked?'1':'0')}catch(_){}
+  $('autoState').textContent='';if(e.target.checked)queueAuto()});
+function queueAuto(){clearTimeout(autoT);if(!$('autoCopy')?.checked)return;$('autoState').textContent='';autoT=setTimeout(autoCopy,600)}
+async function autoCopy(){if(!base||down||txtBox||crop||!document.hasFocus())return;
+  try{const c=document.createElement('canvas');c.width=base.width;c.height=base.height;render(c.getContext('2d'));
+    const blob=await new Promise(r=>c.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+    $('autoState').textContent='已複製 ✓'}catch(e){$('autoState').textContent=''}}
+async function copyImg(){const c=exportCanvas();if(!c)return;try{const blob=await new Promise(r=>c.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast('已複製，切到 Claude 或 LINE 按 Ctrl+V 貼上')}
   catch(err){showExport(c,'這個視窗不允許直接寫入剪貼簿。請在下方圖片上按右鍵 →「複製圖片」。')}}
 function showExport(c,msg){const o=document.createElement('div');o.className='export';
   o.innerHTML=`<div><div style="line-height:1.5;font-size:14px">${msg}</div><img alt="標註完成的圖片" src="${c.toDataURL('image/png')}"><button class="primary" style="align-self:flex-end">關閉</button></div>`;

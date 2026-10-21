@@ -113,6 +113,7 @@ canvas{display:block;max-width:100%;height:auto;touch-action:none}
       <button id="open" class="ghost" title="開啟電腦裡的圖檔">開啟圖檔</button>
     </div>
     <input id="file" type="file" accept="image/*" hidden>
+    <label class="auto" for="burst" title="選一次視窗後鎖定，之後每按一次截圖就抓那個視窗"><input id="burst" type="checkbox"> 連拍模式<span id="burstState"></span></label>
   </section>
 
   <section class="sec">
@@ -172,13 +173,14 @@ canvas{display:block;max-width:100%;height:auto;touch-action:none}
         <li><b>截圖</b> 選好視窗就截下來，並自動停止分享</li>
         <li><b>馬賽克</b> 拖曳框選要遮住的地方，格子大小跟著「粗細」</li>
         <li><b>自動複製</b> 打勾後每次修改完會自動複製，切到 Claude 直接 Ctrl+V</li>
+        <li><b>連拍模式</b> 打勾後選一次視窗就鎖定，按截圖就抓它；取消打勾才停止分享</li>
         <li><b>Shift</b> 拉水平線、正方形、正圓</li>
         <li><b>Delete</b> 刪除最後一筆</li>
         <li><b>點編號</b> 修改數字或字母</li>
         <li><b>＋</b> 自訂顏色，右鍵刪除</li>
       </ul>
     </details>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v2.6</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v2.7</span></div>
   </section>
 </aside>
 
@@ -248,7 +250,14 @@ window.addEventListener('paste',e=>{const it=[...(e.clipboardData?.items||[])].f
 $('open').onclick=$('open2').onclick=()=>$('file').click();
 // ---- 螢幕截圖：第一次選要擷取的視窗或螢幕，之後每按一次就抓當下畫面 ----
 let shotStream=null,shotVideo=null,shotTimer=null;
-function stopShot(){clearTimeout(shotTimer);shotStream?.getTracks().forEach(t=>t.stop());shotStream=null;shotVideo=null}
+function stopShot(){clearTimeout(shotTimer);shotStream?.getTracks().forEach(t=>t.stop());shotStream=null;shotVideo=null;updBurst()}
+// ---- 連拍模式：選一次視窗就鎖定，直到關掉連拍 ----
+let burst=false;
+function updBurst(){const el=document.getElementById('burstState');if(!el)return;
+  if(!burst){el.textContent='';el.title='';return}
+  if(shotStream){const lb=shotStream.getVideoTracks()[0]?.label||'';el.textContent='鎖定中';el.title=lb}
+  else{el.textContent='下次截圖選視窗';el.title=''}}
+document.getElementById('burst').addEventListener('change',e=>{burst=e.target.checked;if(!burst){stopShot();toast('已結束連拍，停止分享')}else toast('連拍模式：選一次視窗後就一直截那個視窗');updBurst()});
 async function takeShot(){
   if(!navigator.mediaDevices?.getDisplayMedia)return toast('這個瀏覽器不支援截圖，請改用 Win+Shift+S');
   commitText();
@@ -267,7 +276,7 @@ async function takeShot(){
     const v=shotVideo,c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
     if(!c.width)throw new Error('empty');
     c.getContext('2d').drawImage(v,0,0);
-    stopShot(); // 截完立刻停止分享
+    if(!burst)stopShot(); else updBurst(); // 一般模式截完立刻停止分享；連拍模式保持鎖定
     loadImg(c.toDataURL('image/png'),()=>{setTool('crop');toast('已截圖，拖曳框選要保留的範圍')});
   }catch(e){if(e&&e.name==='NotAllowedError'){stopShot();toast('已取消截圖')}else{stopShot();toast('無法截圖，請改用 Win+Shift+S 再按 Ctrl+V')}}
 }

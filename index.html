@@ -333,7 +333,7 @@ button.on,.seg button.on,.zbar button.on{background:var(--accent-soft);color:var
       </ul>
     </details>
     <div class="seg" id="themeSeg" title="切換深色／淺色模式"><button data-th="light">☀ 淺色</button><button data-th="dark">☾ 深色</button></div>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v4.6</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v4.7</span></div>
   </section>
 </aside>
 
@@ -624,6 +624,15 @@ function fitSide(){if(side.classList.contains('inpip')){side.classList.remove('c
   if(over()){side.classList.add('compact');if(over()){side.classList.remove('compact');side.classList.add('cols2')}}}
 window.addEventListener('resize',fitSide);document.fonts?.ready.then(fitSide);fitSide();
 
+// ---- 圖片避開浮動面板：面板在左邊時圖片靠右，面板在右邊時圖片靠左 ----
+function avoidPanel(){const P=$('side'),st=$('stage');if(!P||!st)return;st.style.paddingLeft=st.style.paddingRight='';
+  if(P.classList.contains('inpip')||getComputedStyle(P).position!=='fixed')return;
+  const pr=P.getBoundingClientRect(),sr=st.getBoundingClientRect();
+  if(pr.right<sr.left||pr.left>sr.right)return;
+  if(pr.left+pr.width/2<sr.left+sr.width/2)st.style.paddingLeft=Math.max(20,Math.round(pr.right-sr.left+16))+'px';
+  else st.style.paddingRight=Math.max(20,Math.round(sr.right-pr.left+16))+'px'}
+addEventListener('resize',()=>setTimeout(avoidPanel,0));
+
 // ---- 縮放（Ctrl＋滾輪／＋−按鈕）與移動（✋、空白鍵、滑鼠中鍵） ----
 var zoom=0; // 0 = 適應視窗；其他 = 1 代表實際像素 100%
 const stg=$('stage'),dpr=()=>window.devicePixelRatio||1;
@@ -665,14 +674,14 @@ async function popOut(){
   const d=pipWin.document;d.title='截圖標註板 工具';
   const th=document.documentElement.dataset.theme;if(th)d.documentElement.dataset.theme=th;
   document.querySelectorAll('style,link[rel=stylesheet]').forEach(n=>d.head.appendChild(n.cloneNode(true)));
-  d.body.className='pipbody';const mark=document.createComment('side');P.before(mark);P.classList.add('inpip');d.body.append(P);
+  d.body.className='pipbody';const mark=document.createComment('side');P.before(mark);P.classList.add('inpip');d.body.append(P);avoidPanel();
   const fitPip=()=>{try{pipWin.resizeTo(pipWin.outerWidth,Math.min(P.scrollHeight+(pipWin.outerHeight-pipWin.innerHeight)+2,screen.availHeight-40))}catch(e){}};
   requestAnimationFrame(()=>requestAnimationFrame(fitPip));P.querySelector('.foot details')?.addEventListener('toggle',()=>{if(pipWin)fitPip()});
   $('dockPop').textContent='⧈';$('dockPop').title='放回截圖標註板視窗';
   pipWin.addEventListener('keydown',e=>{if(e.target.closest?.('input,select,textarea'))return;
     window.dispatchEvent(new KeyboardEvent('keydown',{key:e.key,code:e.code,ctrlKey:e.ctrlKey,metaKey:e.metaKey,shiftKey:e.shiftKey,altKey:e.altKey}));if(e.ctrlKey&&'zyc'.includes(e.key.toLowerCase()))e.preventDefault()});
   pipWin.addEventListener('paste',e=>window.dispatchEvent(new ClipboardEvent('paste',{clipboardData:e.clipboardData})));
-  pipWin.addEventListener('pagehide',()=>{P.classList.remove('inpip');mark.replaceWith(P);pipWin=null;
+  pipWin.addEventListener('pagehide',()=>{P.classList.remove('inpip');mark.replaceWith(P);pipWin=null;setTimeout(avoidPanel,0);
     $('dockPop').textContent='⧉';$('dockPop').title='彈出成獨立小視窗，可以浮在 XQ 等其他程式上面';try{fitSide()}catch(e){}});
 }
 $('dockPop').onclick=popOut;
@@ -681,7 +690,7 @@ $('dockMin').addEventListener('click',()=>{if(pipWin)try{const P=$('side');pipWi
 // ---- 浮動面板：拖曳移動、收合、記住位置 ----
 (()=>{const P=$('side'),D=$('dock');let st=null;
   const clamp=(x,y)=>{const w=P.offsetWidth,h=Math.min(P.offsetHeight,60);return[Math.max(4,Math.min(innerWidth-w-4,x)),Math.max(4,Math.min(innerHeight-h,y))]};
-  const place=(x,y,save)=>{[x,y]=clamp(x,y);P.style.left=x+'px';P.style.top=y+'px';P.style.maxHeight=`calc(100vh - ${y+16}px)`;
+  const place=(x,y,save)=>{[x,y]=clamp(x,y);setTimeout(avoidPanel,0);P.style.left=x+'px';P.style.top=y+'px';P.style.maxHeight=`calc(100vh - ${y+16}px)`;
     if(save)try{localStorage.setItem('annot.panel',JSON.stringify({x,y,min:P.classList.contains('min')}))}catch(e){}};
   let saved={};try{saved=JSON.parse(localStorage.getItem('annot.panel')||'{}')}catch(e){}
   if(saved.min)P.classList.add('min');

@@ -234,6 +234,11 @@ button.on,.seg button.on,.zbar button.on{background:var(--accent-soft);color:var
   --shot:#557767;--shot-edge:#648a77;--shot-glow:rgba(85,119,103,.28)}}
 :root[data-theme="dark"]{--bg:#141917;--panel:#1b211e;--line:#2e3833;--stage:#0e1210;--muted:#8f9d96;--accent:#557767;--on-accent:#ffffff;--accent-text:#a8cbb9;--accent-soft:#232f29;--accent-line:#3c5548;
   --shot:#557767;--shot-edge:#648a77;--shot-glow:rgba(85,119,103,.28)}
+/* ---- 畫布灰底 (v4.8)：跟黑色截圖分得出邊界 ---- */
+:root{--stage:#c8cfca}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--stage:#3b423e}}
+:root[data-theme="dark"]{--stage:#3b423e}
+.wrap{box-shadow:0 0 0 1px rgba(0,0,0,.35),0 6px 22px rgba(0,0,0,.35)}
 </style>
 
 <script>try{const t=localStorage.getItem('annot.theme');if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -333,7 +338,7 @@ button.on,.seg button.on,.zbar button.on{background:var(--accent-soft);color:var
       </ul>
     </details>
     <div class="seg" id="themeSeg" title="切換深色／淺色模式"><button data-th="light">☀ 淺色</button><button data-th="dark">☾ 深色</button></div>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v4.7</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v4.8</span></div>
   </section>
 </aside>
 

@@ -5,7 +5,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1c212c">
+<meta name="theme-color" content="#1b211e">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&family=LXGW+WenKai+TC:wght@700&family=Chiron+GoRound+TC:wght@700&display=swap">
@@ -202,6 +202,38 @@ button{font-size:12.5px;padding:6px 8px}
 .pipbody{display:block!important;padding:0!important;margin:0;background:var(--panel);overflow:auto}
 .side.inpip{position:static!important;width:100%!important;max-height:none!important;box-shadow:none;border:0;border-radius:0}
 .side.inpip .dock{cursor:default;border-radius:0}
+/* 小視窗很窄，會觸發手機版排版；這裡強制維持單欄、標題列照樣顯示 */
+.side.inpip{display:flex!important;flex-direction:column!important;column-count:auto!important}
+.side.inpip .dock{display:flex!important}
+/* ---- 配色統一 (v4.3)：所有「選中／主要」都用同一個深藍，白字；滑桿、勾選框也同色 ---- */
+:root{--accent:#2f5bd3;--on-accent:#ffffff;--accent-text:#2f5bd3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:#3a63e8;--on-accent:#ffffff;--accent-text:#8fa8ff;--accent-soft:#25304a}}
+:root[data-theme="dark"]{--accent:#3a63e8;--on-accent:#ffffff;--accent-text:#8fa8ff;--accent-soft:#25304a}
+input[type=range],input[type=checkbox]{accent-color:var(--accent)}
+#autoState,#burstState{color:var(--accent-text)}
+button.on,.seg button.on,.zbar button.on,button.primary{background:var(--accent);color:var(--on-accent)}
+.tools button.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+#numOpt.active{border-color:var(--accent);background:var(--accent-soft)}
+.sw.on{box-shadow:0 0 0 2px var(--accent-text)}
+.th.on{border-color:var(--accent-text)}
+/* ---- 柔和配色 (v4.4)：主要按鈕用低彩度藍；選中狀態改成淡底＋藍字＋細框，清楚但不刺眼 ---- */
+:root{--accent:#5470b8;--on-accent:#ffffff;--accent-text:#3d5aa6;--accent-soft:#e6ecf8;--accent-line:#b9c7e8;
+  --shot:#5470b8;--shot-edge:#4a64a8;--shot-glow:rgba(84,112,184,.18)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:#4f68a8;--on-accent:#ffffff;--accent-text:#a9bcee;--accent-soft:#273149;--accent-line:#3c4d75;
+  --shot:#4f68a8;--shot-edge:#5d77ba;--shot-glow:rgba(79,104,168,.25)}}
+:root[data-theme="dark"]{--accent:#4f68a8;--on-accent:#ffffff;--accent-text:#a9bcee;--accent-soft:#273149;--accent-line:#3c4d75;
+  --shot:#4f68a8;--shot-edge:#5d77ba;--shot-glow:rgba(79,104,168,.25)}
+button.on,.seg button.on,.zbar button.on{background:var(--accent-soft);color:var(--accent-text);box-shadow:inset 0 0 0 1px var(--accent-line)}
+.tools button.on{box-shadow:inset 0 0 0 1px var(--accent-line)}
+.seg button.on{font-weight:600}
+#shot{box-shadow:0 2px 8px var(--shot-glow)}
+/* ---- 灰綠配色 (v4.5)：主色改成低彩度灰綠（sage），選中狀態一樣淡底＋綠字＋細框 ---- */
+:root{--bg:#eef1ef;--line:#d3dbd6;--stage:#dde4df;--muted:#5d6a63;--accent:#5f8270;--on-accent:#ffffff;--accent-text:#456a58;--accent-soft:#e6efe9;--accent-line:#bdd1c5;
+  --shot:#5f8270;--shot-edge:#557563;--shot-glow:rgba(95,130,112,.2)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141917;--panel:#1b211e;--line:#2e3833;--stage:#0e1210;--muted:#8f9d96;--accent:#557767;--on-accent:#ffffff;--accent-text:#a8cbb9;--accent-soft:#232f29;--accent-line:#3c5548;
+  --shot:#557767;--shot-edge:#648a77;--shot-glow:rgba(85,119,103,.28)}}
+:root[data-theme="dark"]{--bg:#141917;--panel:#1b211e;--line:#2e3833;--stage:#0e1210;--muted:#8f9d96;--accent:#557767;--on-accent:#ffffff;--accent-text:#a8cbb9;--accent-soft:#232f29;--accent-line:#3c5548;
+  --shot:#557767;--shot-edge:#648a77;--shot-glow:rgba(85,119,103,.28)}
 </style>
 
 <script>try{const t=localStorage.getItem('annot.theme');if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -301,7 +333,7 @@ button{font-size:12.5px;padding:6px 8px}
       </ul>
     </details>
     <div class="seg" id="themeSeg" title="切換深色／淺色模式"><button data-th="light">☀ 淺色</button><button data-th="dark">☾ 深色</button></div>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v3.9</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v4.6</span></div>
   </section>
 </aside>
 
@@ -363,7 +395,7 @@ renderSwatches();
 function setTool(t){commitText();if(t==='hl'&&tool!=='hl'&&['#e53935','#000000','#ffffff'].includes(color))setColor('#f9a825');if(t!=='crop'){crop=null;removeCropBar()}tool=t;qsa('#tools button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('numOpt').classList.toggle('active',t==='num');try{fitSide()}catch(e){}
   cv.style.cursor=t==='hand'?'grab':(t==='text'||t==='tag'?'text':'crosshair');$('zHand')?.classList.toggle('on',t==='hand');draw()}
 qsa('#tools button').forEach(b=>b.onclick=()=>setTool(b.dataset.t));
-setTool('arrow');
+setTool('crop'); // 預設工具：修剪
 
 // ---- 歷史 ----
 function snap(){hist.push({base,shapes:JSON.parse(JSON.stringify(shapes)),numNext});if(hist.length>60)hist.shift();fut=[];btns()}
@@ -376,7 +408,7 @@ $('clear').onclick=()=>{if(!shapes.length)return;snap();shapes=[];numNext=numBas
 
 // ---- 載入圖片 ----
 function loadImg(src,after){const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);
-  newDoc(c);if(after)after();else toast('已貼上圖片')};im.src=src}
+  newDoc(c);if(after)after();else{setTool('crop');toast('已貼上圖片，可以直接拖曳修剪')}};im.src=src}
 function loadFile(f){if(!f||!f.type.startsWith('image/'))return toast('這不是圖片檔');const r=new FileReader();r.onload=()=>loadImg(r.result);r.readAsDataURL(f)}
 window.addEventListener('paste',e=>{const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(it){e.preventDefault();loadFile(it.getAsFile())}else toast('剪貼簿裡沒有圖片，先用 Win+Shift+S 截圖')});
 $('open').onclick=$('open2').onclick=()=>$('file').click();
@@ -454,7 +486,7 @@ function arrowHead(c,x1,y1,x2,y2,w){const a=Math.atan2(y2-y1,x2-x1),L=Math.max(1
 // ---- 字型 ----
 const FONTS={jh:'"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif',ming:'"PMingLiU","新細明體","MingLiU","Noto Serif TC",serif',
   kai:'"DFKai-SB","標楷體","BiauKai","Kaiti TC","LXGW WenKai TC",serif',serif:'"Noto Serif TC",serif',round:'"Chiron GoRound TC","Noto Sans TC",sans-serif',wenkai:'"LXGW WenKai TC",serif'};
-let fontKey='jh';try{const v=localStorage.getItem('annot.font');if(v&&FONTS[v])fontKey=v}catch(e){}
+let fontKey='jh'; // 每次打開都從微軟正黑體開始
 let fillMode='fill';try{const v=localStorage.getItem('annot.style');if(v==='line'||v==='fill')fillMode=v}catch(e){}
 // 填滿：色塊＋白字；外框：白底＋彩色框線＋彩色字（淺色時改深底）
 function boxStyle(s){if(s.st!=='line')return{bg:s.color,fg:light(s.color)?'#000':'#fff',bd:null};return{bg:light(s.color)?'#1a1a1a':'#ffffff',fg:s.color,bd:s.color}}
@@ -634,6 +666,8 @@ async function popOut(){
   const th=document.documentElement.dataset.theme;if(th)d.documentElement.dataset.theme=th;
   document.querySelectorAll('style,link[rel=stylesheet]').forEach(n=>d.head.appendChild(n.cloneNode(true)));
   d.body.className='pipbody';const mark=document.createComment('side');P.before(mark);P.classList.add('inpip');d.body.append(P);
+  const fitPip=()=>{try{pipWin.resizeTo(pipWin.outerWidth,Math.min(P.scrollHeight+(pipWin.outerHeight-pipWin.innerHeight)+2,screen.availHeight-40))}catch(e){}};
+  requestAnimationFrame(()=>requestAnimationFrame(fitPip));P.querySelector('.foot details')?.addEventListener('toggle',()=>{if(pipWin)fitPip()});
   $('dockPop').textContent='⧈';$('dockPop').title='放回截圖標註板視窗';
   pipWin.addEventListener('keydown',e=>{if(e.target.closest?.('input,select,textarea'))return;
     window.dispatchEvent(new KeyboardEvent('keydown',{key:e.key,code:e.code,ctrlKey:e.ctrlKey,metaKey:e.metaKey,shiftKey:e.shiftKey,altKey:e.altKey}));if(e.ctrlKey&&'zyc'.includes(e.key.toLowerCase()))e.preventDefault()});

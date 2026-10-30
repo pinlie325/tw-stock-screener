@@ -105,7 +105,7 @@ kbd{font-family:var(--mono);font-size:10px;opacity:.6}
 .th .t{position:absolute;left:0;right:0;bottom:0;font:10px var(--mono);color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65));padding:6px 4px 2px}
 .th .x{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:12px;line-height:18px;text-align:center;display:none}
 .th:hover .x,.th:focus-visible .x{display:block}
-.stage{flex:1;min-width:0;background:var(--stage);border-radius:12px;overflow:auto;position:relative;display:flex;align-items:flex-start;justify-content:center;padding:20px}
+.stage{flex:1;min-width:0;background:var(--stage);border-radius:12px;overflow:auto;position:relative;display:flex;align-items:flex-start;justify-content:flex-start;padding:20px}
 .wrap{position:relative;line-height:0;box-shadow:0 2px 14px rgba(0,0,0,.22);margin:auto}
 canvas{display:block;max-width:100%;height:auto;touch-action:none}
 #cv{cursor:crosshair}
@@ -174,11 +174,40 @@ button{font-size:12.5px;padding:6px 8px}
 #shot kbd{font-size:10px;padding:0 5px}
 #copy,#save,#undo,#redo,#clear{font-size:12px}
 #open{font-size:12px;padding:5px 8px;justify-content:center}
+/* ---- 浮動操作面板 (v3.8)：面板浮在畫面上、可拖曳、可收合，畫布用滿整個視窗 ---- */
+.side{position:fixed;z-index:20;left:16px;top:16px;max-height:calc(100vh - 32px);
+  box-shadow:0 12px 32px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.2)}
+.dock{display:flex;align-items:center;gap:6px;padding:6px 6px 6px 10px;border-bottom:1px solid var(--line);
+  cursor:grab;user-select:none;touch-action:none;column-span:all;background:var(--panel);border-radius:12px 12px 0 0}
+.dock:active{cursor:grabbing}
+.dock .grip{color:var(--muted);font-size:13px;line-height:1}
+.dock b{flex:1;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.06em}
+#dockMin{padding:2px 8px;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:6px}
+.side.min .sec:not(.keep){display:none!important}
+.side.min .sec.keep{border-bottom:0}
+.side.min{max-height:none}
+.side.dragging{opacity:.92;transition:none}
+@media (max-width:700px){.side{position:static;max-height:none;box-shadow:none}.dock{display:none}}
+/* ---- 縮放與移動 (v3.9) ---- */
+.main{position:relative}
+.zbar{position:absolute;top:10px;right:14px;z-index:15;display:flex;gap:2px;padding:3px;background:var(--panel);border:1px solid var(--line);border-radius:9px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.zbar[hidden]{display:none}
+.zbar button{padding:4px 9px;font-size:13px;min-width:30px;justify-content:center}
+#zPct{min-width:52px;font-family:var(--mono);font-size:11.5px}
+.zbar button.on{background:var(--accent);color:var(--on-accent)}
+.stage.panning,.stage.panning #cv{cursor:grabbing!important}
+.stage.canpan,.stage.canpan #cv{cursor:grab!important}
+/* ---- 彈出成獨立浮動視窗 (Document Picture-in-Picture) ---- */
+#dockPop{padding:2px 7px;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:6px}
+.pipbody{display:block!important;padding:0!important;margin:0;background:var(--panel);overflow:auto}
+.side.inpip{position:static!important;width:100%!important;max-height:none!important;box-shadow:none;border:0;border-radius:0}
+.side.inpip .dock{cursor:default;border-radius:0}
 </style>
 
 <script>try{const t=localStorage.getItem('annot.theme');if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
-<aside class="side" role="toolbar" aria-label="工具">
-  <section class="sec">
+<aside class="side" id="side" role="toolbar" aria-label="工具">
+  <div class="dock" id="dock" title="拖曳移動面板；雙擊回到左上角"><span class="grip" aria-hidden="true">⠿</span><b>工具面板</b><button id="dockPop" title="彈出成獨立小視窗，可以浮在 XQ 等其他程式上面">⧉</button><button id="dockMin" title="收合／展開面板">—</button></div>
+  <section class="sec keep">
     <h2>取得圖片</h2>
     <div class="row">
       <button id="shot" title="擷取螢幕畫面 (S)"><svg class="shot-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><circle cx="12" cy="12" r="3.2"/></svg><span>截圖</span><kbd>S</kbd></button>
@@ -261,6 +290,10 @@ button{font-size:12.5px;padding:6px 8px}
         <li><b>字型</b> 在「大小」區選，之後新打的文字、標籤、指示會用新字型；已經畫好的不變</li>
         <li><b>樣式</b> 標籤、指示、編號可選「填滿」或「外框」，按 F 快速切換；已畫好的不變</li>
         <li><b>工具圖示</b> 滑鼠停在圖示上會顯示名稱和快捷鍵</li>
+        <li><b>工具面板</b> 拖曳最上面那條移動位置，按「—」收合只留截圖鈕，雙擊標題列回到左上角</li>
+        <li><b>縮放</b> Ctrl＋滾輪，或右上角 −／＋；點百分比在「適應視窗／100%」之間切換；Ctrl 0 回到適應</li>
+        <li><b>移動畫面</b> 按住空白鍵拖曳、滑鼠中鍵拖曳，或按右上角 ✋（V）</li>
+        <li><b>獨立浮動視窗</b> 按工具面板標題列的 ⧉，面板會變成小視窗浮在所有程式上面；關掉小視窗就回來</li>
         <li><b>Shift</b> 拉水平線、正方形、正圓</li>
         <li><b>Delete</b> 刪除最後一筆</li>
         <li><b>點編號</b> 修改數字或字母</li>
@@ -268,7 +301,7 @@ button{font-size:12.5px;padding:6px 8px}
       </ul>
     </details>
     <div class="seg" id="themeSeg" title="切換深色／淺色模式"><button data-th="light">☀ 淺色</button><button data-th="dark">☾ 深色</button></div>
-    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v3.7</span></div>
+    <div class="meta"><span id="dim">尚未載入圖片</span><span id="ver">v3.9</span></div>
   </section>
 </aside>
 
@@ -284,6 +317,9 @@ button{font-size:12.5px;padding:6px 8px}
     <canvas id="cv" width="800" height="500"></canvas>
   </div>
 </div>
+<div class="zbar" id="zbar" title="縮放：Ctrl＋滾輪；移動：按住空白鍵拖曳或按 V">
+  <button id="zHand" title="移動畫面 (V，或按住空白鍵拖曳)">✋</button><button id="zOut" title="縮小 (Ctrl −)">−</button><button id="zPct" title="點一下：適應視窗／100% 切換 (Ctrl 0)">適應</button><button id="zIn" title="放大 (Ctrl ＋)">＋</button>
+</div>
 <div class="film" id="film" hidden>
   <div class="fhead"><b>最近截圖</b><span><span id="filmCount">0</span> 張</span><button id="filmClear" class="ghost" title="刪除全部最近截圖">全部清除</button></div>
   <div class="flist" id="filmList"></div>
@@ -298,7 +334,10 @@ let base=null;            // HTMLCanvasElement 底圖
 let shapes=[];            // 標註物件
 let hist=[],fut=[];
 let tool='arrow',color=COLORS[0],cur=null,crop=null,numNext='1',txtBox=null;
-const $=id=>document.getElementById(id);
+var pipWin=null;
+const $=id=>document.getElementById(id)||(pipWin?pipWin.document.getElementById(id):null);
+const qsa=sel=>[...document.querySelectorAll(sel),...(pipWin?pipWin.document.querySelectorAll(sel):[])];
+const clip=()=>(pipWin&&pipWin.document.hasFocus())?pipWin.navigator.clipboard:navigator.clipboard;
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),1800)};
 
 // ---- 色票與工具 ----
@@ -306,7 +345,7 @@ const CKEY='annot.customColors';
 let custom=[];try{custom=JSON.parse(localStorage.getItem(CKEY)||'[]').slice(0,6)}catch(e){}
 function saveCustom(){try{localStorage.setItem(CKEY,JSON.stringify(custom))}catch(e){}}
 function light(c){const n=parseInt(c.slice(1),16),R=n>>16&255,G=n>>8&255,B=n&255;return (0.299*R+0.587*G+0.114*B)>170}
-function setColor(c){color=c.toLowerCase();document.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x.title===color));$('pick').value=color}
+function setColor(c){color=c.toLowerCase();qsa('.sw').forEach(x=>x.classList.toggle('on',x.title===color));$('pick').value=color}
 function renderSwatches(){const box=$('colors');box.innerHTML='';
   const mk=(c,isCustom)=>{const b=document.createElement('button');b.className='sw'+(c===color?' on':'');b.style.background=c;b.title=c;
     b.setAttribute('aria-label',(isCustom?'自訂顏色 ':'顏色 ')+c);b.onclick=()=>setColor(c);
@@ -317,13 +356,13 @@ function renderSwatches(){const box=$('colors');box.innerHTML='';
   custom.forEach(c=>mk(c,true));
   const lab=document.createElement('label');lab.className='pick';lab.title='自訂顏色';lab.htmlFor='pick';lab.innerHTML='＋';box.append(lab);
   let inp=$('pick');if(!inp){inp=document.createElement('input');inp.type='color';inp.id='pick';
-    inp.addEventListener('input',e=>{color=e.target.value.toLowerCase();document.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x.title===color))});
+    inp.addEventListener('input',e=>{color=e.target.value.toLowerCase();qsa('.sw').forEach(x=>x.classList.toggle('on',x.title===color))});
     inp.addEventListener('change',e=>{const c=e.target.value.toLowerCase();if(!COLORS.includes(c)&&!custom.includes(c)){custom.unshift(c);custom=custom.slice(0,6);saveCustom()}renderSwatches();setColor(c)})}
   inp.value=color;box.append(inp)}
 renderSwatches();
-function setTool(t){commitText();if(t==='hl'&&tool!=='hl'&&['#e53935','#000000','#ffffff'].includes(color))setColor('#f9a825');if(t!=='crop'){crop=null;removeCropBar()}tool=t;document.querySelectorAll('#tools button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('numOpt').classList.toggle('active',t==='num');try{fitSide()}catch(e){}
-  cv.style.cursor=t==='text'||t==='tag'?'text':'crosshair';draw()}
-document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>setTool(b.dataset.t));
+function setTool(t){commitText();if(t==='hl'&&tool!=='hl'&&['#e53935','#000000','#ffffff'].includes(color))setColor('#f9a825');if(t!=='crop'){crop=null;removeCropBar()}tool=t;qsa('#tools button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('numOpt').classList.toggle('active',t==='num');try{fitSide()}catch(e){}
+  cv.style.cursor=t==='hand'?'grab':(t==='text'||t==='tag'?'text':'crosshair');$('zHand')?.classList.toggle('on',t==='hand');draw()}
+qsa('#tools button').forEach(b=>b.onclick=()=>setTool(b.dataset.t));
 setTool('arrow');
 
 // ---- 歷史 ----
@@ -346,11 +385,11 @@ let shotStream=null,shotVideo=null,shotTimer=null;
 function stopShot(){clearTimeout(shotTimer);shotStream?.getTracks().forEach(t=>t.stop());shotStream=null;shotVideo=null;updBurst()}
 // ---- 連拍模式：選一次視窗就鎖定，直到關掉連拍 ----
 let burst=false;
-function updBurst(){const el=document.getElementById('burstState');if(!el)return;
+function updBurst(){const el=$('burstState');if(!el)return;
   if(!burst){el.textContent='';el.title='';return}
   if(shotStream){const lb=shotStream.getVideoTracks()[0]?.label||'';el.textContent='鎖定中';el.title=lb}
   else{el.textContent='下次截圖選視窗';el.title=''}}
-document.getElementById('burst').addEventListener('change',e=>{burst=e.target.checked;if(!burst){stopShot();toast('已結束連拍，停止分享')}else toast('連拍模式：選一次視窗後就一直截那個視窗');updBurst()});
+$('burst').addEventListener('change',e=>{burst=e.target.checked;if(!burst){stopShot();toast('已結束連拍，停止分享')}else toast('連拍模式：選一次視窗後就一直截那個視窗');updBurst()});
 async function takeShot(){
   if(!navigator.mediaDevices?.getDisplayMedia)return toast('這個瀏覽器不支援截圖，請改用 Win+Shift+S');
   commitText();
@@ -457,7 +496,7 @@ function drawShape(c,s){c.save();c.strokeStyle=c.fillStyle=s.color;c.lineWidth=s
     c.fillStyle=B.fg;const L=String(s.n).length;c.font=`700 ${r*(L<=1?1.15:L===2?.95:.7)}px ${getComputedStyle(document.body).fontFamily}`;c.textAlign='center';c.textBaseline='middle';c.fillText(s.n,s.x,s.y+r*.05)}
   c.restore()}
 function render(c){c.drawImage(base,0,0);shapes.forEach(s=>drawShape(c,s))}
-function draw(){syncNum();if(!base)return;queueAuto();queueThumb();ctx.clearRect(0,0,cv.width,cv.height);render(ctx);if(cur)drawShape(ctx,cur);if(txtBox&&txtBox.t==='call')drawShape(ctx,{t:'call',x:txtBox.x,y:txtBox.y,tx:txtBox.tx,ty:txtBox.ty,fs:txtBox.fs,color:txtBox.color,text:'',st:txtBox.st});
+function draw(){syncNum();if(!base)return;applyZoom();queueAuto();queueThumb();ctx.clearRect(0,0,cv.width,cv.height);render(ctx);if(cur)drawShape(ctx,cur);if(txtBox&&txtBox.t==='call')drawShape(ctx,{t:'call',x:txtBox.x,y:txtBox.y,tx:txtBox.tx,ty:txtBox.ty,fs:txtBox.fs,color:txtBox.color,text:'',st:txtBox.st});
   if(crop){const x=Math.min(crop.x1,crop.x2),y=Math.min(crop.y1,crop.y2),w=Math.abs(crop.x2-crop.x1),h=Math.abs(crop.y2-crop.y1);
     ctx.save();ctx.fillStyle='rgba(0,0,0,.5)';ctx.beginPath();ctx.rect(0,0,cv.width,cv.height);ctx.rect(x,y,w,h);ctx.fill('evenodd');
     ctx.setLineDash([8*scaleK(),6*scaleK()]);ctx.strokeStyle='#fff';ctx.lineWidth=2*scaleK();ctx.strokeRect(x,y,w,h);
@@ -510,7 +549,7 @@ cv.addEventListener('pointerup',()=>{if(!down)return;down=false;
   if(cur){const ok=cur.p?cur.p.length>1:Math.hypot(cur.x2-cur.x1,cur.y2-cur.y1)>3;if(ok){snap();shapes.push(cur)}cur=null;draw()}});
 
 // ---- 鍵盤 ----
-const keyMap={s:'__shot',c:'crop',m:'mos',p:'pen',h:'hl',l:'line',a:'arrow',r:'rect',o:'ell',t:'text',g:'tag',k:'call',n:'num'};
+const keyMap={v:'hand',s:'__shot',c:'crop',m:'mos',p:'pen',h:'hl',l:'line',a:'arrow',r:'rect',o:'ell',t:'text',g:'tag',k:'call',n:'num'};
 window.addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'&&e.target.type!=='range')return;
   const k=e.key.toLowerCase();
   if((e.ctrlKey||e.metaKey)&&k==='z'){e.preventDefault();e.shiftKey?redo():undo();return}
@@ -534,9 +573,9 @@ $('autoCopy').addEventListener('change',e=>{try{localStorage.setItem('annot.auto
 function queueAuto(){clearTimeout(autoT);if(!$('autoCopy')?.checked)return;$('autoState').textContent='';autoT=setTimeout(autoCopy,600)}
 async function autoCopy(){if(!base||down||txtBox||crop||!document.hasFocus())return;
   try{const c=document.createElement('canvas');c.width=base.width;c.height=base.height;render(c.getContext('2d'));
-    const blob=await new Promise(r=>c.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+    const blob=await new Promise(r=>c.toBlob(r,'image/png'));await clip().write([new ClipboardItem({'image/png':blob})]);
     $('autoState').textContent='已複製 ✓'}catch(e){$('autoState').textContent=''}}
-async function copyImg(){const c=exportCanvas();if(!c)return;try{const blob=await new Promise(r=>c.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast('已複製，切到 Claude 或 LINE 按 Ctrl+V 貼上')}
+async function copyImg(){const c=exportCanvas();if(!c)return;try{const blob=await new Promise(r=>c.toBlob(r,'image/png'));await clip().write([new ClipboardItem({'image/png':blob})]);toast('已複製，切到 Claude 或 LINE 按 Ctrl+V 貼上')}
   catch(err){showExport(c,'這個視窗不允許直接寫入剪貼簿。請在下方圖片上按右鍵 →「複製圖片」。')}}
 function showExport(c,msg){const o=document.createElement('div');o.className='export';
   o.innerHTML=`<div><div style="line-height:1.5;font-size:14px">${msg}</div><img alt="標註完成的圖片" src="${c.toDataURL('image/png')}"><button class="primary" style="align-self:flex-end">關閉</button></div>`;
@@ -547,23 +586,91 @@ $('save').onclick=()=>{const c=exportCanvas();if(c)showExport(c,'在圖片上按
 btns();
 // ---- 側欄自動排列：放得下就單欄，放不下先緊湊、再分兩欄 ----
 const side=document.querySelector('.side');
-function fitSide(){if(matchMedia('(max-width:700px)').matches){side.classList.remove('compact','cols2');return}
+function fitSide(){if(side.classList.contains('inpip')){side.classList.remove('compact','cols2');return}if(matchMedia('(max-width:700px)').matches){side.classList.remove('compact','cols2');return}
   side.classList.remove('compact','cols2');
   const over=()=>side.scrollHeight>side.clientHeight+1;
   if(over()){side.classList.add('compact');if(over()){side.classList.remove('compact');side.classList.add('cols2')}}}
 window.addEventListener('resize',fitSide);document.fonts?.ready.then(fitSide);fitSide();
 
+// ---- 縮放（Ctrl＋滾輪／＋−按鈕）與移動（✋、空白鍵、滑鼠中鍵） ----
+var zoom=0; // 0 = 適應視窗；其他 = 1 代表實際像素 100%
+const stg=$('stage'),dpr=()=>window.devicePixelRatio||1;
+function curZoom(){if(!base)return 1;const r=cv.getBoundingClientRect();return r.width*dpr()/base.width}
+function applyZoom(){const zb=$('zbar');if(!base){zb.hidden=true;return}zb.hidden=false;
+  if(!zoom){cv.style.maxWidth='100%';cv.style.width='';$('zPct').textContent='適應'}
+  else{cv.style.maxWidth='none';cv.style.width=Math.round(base.width*zoom/dpr())+'px';$('zPct').textContent=Math.round(zoom*100)+'%'}}
+function zoomTo(z,cx,cy){if(!base)return;const r0=cv.getBoundingClientRect();
+  if(cx==null){const sr=stg.getBoundingClientRect();cx=sr.left+sr.width/2;cy=sr.top+sr.height/2}
+  const fx=(cx-r0.left)/r0.width,fy=(cy-r0.top)/r0.height;
+  zoom=z?Math.max(.1,Math.min(8,z)):0;applyZoom();
+  if(zoom){const r1=cv.getBoundingClientRect();stg.scrollLeft+=r1.left+fx*r1.width-cx;stg.scrollTop+=r1.top+fy*r1.height-cy}
+  try{removeCropBar();if(crop)showCropBar()}catch(e){}}
+const zoomBy=(f,cx,cy)=>zoomTo(curZoom()*f,cx,cy);
+stg.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey)||!base)return;e.preventDefault();zoomBy(e.deltaY<0?1.15:1/1.15,e.clientX,e.clientY)},{passive:false});
+$('zIn').onclick=()=>zoomBy(1.25);$('zOut').onclick=()=>zoomBy(1/1.25);
+$('zPct').onclick=()=>zoomTo(zoom?0:1);
+let prevTool='arrow';$('zHand').onclick=()=>{if(tool==='hand')setTool(prevTool);else{prevTool=tool;setTool('hand')}};
+window.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||e.target.closest?.('input,textarea,select'))return;
+  if(e.key==='='||e.key==='+'){e.preventDefault();zoomBy(1.25)}else if(e.key==='-'){e.preventDefault();zoomBy(1/1.25)}else if(e.key==='0'){e.preventDefault();zoomTo(0)}},true);
+let spaceDown=false,pan=null;
+const canPan=()=>tool==='hand'||spaceDown;
+window.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.target.closest?.('input,textarea,select,button')&&!txtBox){e.preventDefault();if(!spaceDown){spaceDown=true;stg.classList.add('canpan')}}},true);
+window.addEventListener('keyup',e=>{if(e.code==='Space'){spaceDown=false;stg.classList.remove('canpan')}});
+stg.addEventListener('pointerdown',e=>{if(!(canPan()||e.button===1))return;e.preventDefault();e.stopPropagation();
+  pan={x:e.clientX,y:e.clientY,sl:stg.scrollLeft,st:stg.scrollTop};stg.setPointerCapture(e.pointerId);stg.classList.add('panning')},true);
+stg.addEventListener('pointermove',e=>{if(!pan)return;stg.scrollLeft=pan.sl-(e.clientX-pan.x);stg.scrollTop=pan.st-(e.clientY-pan.y)});
+const endPan=()=>{if(!pan)return;pan=null;stg.classList.remove('panning')};
+stg.addEventListener('pointerup',endPan);stg.addEventListener('pointercancel',endPan);
+applyZoom();
+
+// ---- 彈出成獨立浮動視窗：可以浮在 XQ、AutoCAD 等其他程式上面（Chrome 116 以上） ----
+async function popOut(){
+  if(pipWin){pipWin.close();return}
+  if(!('documentPictureInPicture' in window))return toast('這個瀏覽器不支援獨立浮動視窗，請用最新版 Chrome');
+  const P=$('side'),w=Math.ceil(P.getBoundingClientRect().width)+4;
+  P.classList.remove('compact','cols2');const h=Math.min(P.scrollHeight+4,screen.availHeight-80);
+  try{pipWin=await documentPictureInPicture.requestWindow({width:w,height:h})}catch(e){pipWin=null;return toast('無法開啟浮動視窗')}
+  const d=pipWin.document;d.title='截圖標註板 工具';
+  const th=document.documentElement.dataset.theme;if(th)d.documentElement.dataset.theme=th;
+  document.querySelectorAll('style,link[rel=stylesheet]').forEach(n=>d.head.appendChild(n.cloneNode(true)));
+  d.body.className='pipbody';const mark=document.createComment('side');P.before(mark);P.classList.add('inpip');d.body.append(P);
+  $('dockPop').textContent='⧈';$('dockPop').title='放回截圖標註板視窗';
+  pipWin.addEventListener('keydown',e=>{if(e.target.closest?.('input,select,textarea'))return;
+    window.dispatchEvent(new KeyboardEvent('keydown',{key:e.key,code:e.code,ctrlKey:e.ctrlKey,metaKey:e.metaKey,shiftKey:e.shiftKey,altKey:e.altKey}));if(e.ctrlKey&&'zyc'.includes(e.key.toLowerCase()))e.preventDefault()});
+  pipWin.addEventListener('paste',e=>window.dispatchEvent(new ClipboardEvent('paste',{clipboardData:e.clipboardData})));
+  pipWin.addEventListener('pagehide',()=>{P.classList.remove('inpip');mark.replaceWith(P);pipWin=null;
+    $('dockPop').textContent='⧉';$('dockPop').title='彈出成獨立小視窗，可以浮在 XQ 等其他程式上面';try{fitSide()}catch(e){}});
+}
+$('dockPop').onclick=popOut;
+$('dockMin').addEventListener('click',()=>{if(pipWin)try{const P=$('side');pipWin.resizeTo(pipWin.outerWidth,P.scrollHeight+(pipWin.outerHeight-pipWin.innerHeight)+2)}catch(e){}});
+
+// ---- 浮動面板：拖曳移動、收合、記住位置 ----
+(()=>{const P=$('side'),D=$('dock');let st=null;
+  const clamp=(x,y)=>{const w=P.offsetWidth,h=Math.min(P.offsetHeight,60);return[Math.max(4,Math.min(innerWidth-w-4,x)),Math.max(4,Math.min(innerHeight-h,y))]};
+  const place=(x,y,save)=>{[x,y]=clamp(x,y);P.style.left=x+'px';P.style.top=y+'px';P.style.maxHeight=`calc(100vh - ${y+16}px)`;
+    if(save)try{localStorage.setItem('annot.panel',JSON.stringify({x,y,min:P.classList.contains('min')}))}catch(e){}};
+  let saved={};try{saved=JSON.parse(localStorage.getItem('annot.panel')||'{}')}catch(e){}
+  if(saved.min)P.classList.add('min');
+  requestAnimationFrame(()=>{place(saved.x??16,saved.y??16,false);try{fitSide()}catch(e){}});
+  D.addEventListener('pointerdown',e=>{if(P.classList.contains('inpip'))return;if(e.target.closest('button'))return;st={dx:e.clientX-P.offsetLeft,dy:e.clientY-P.offsetTop};D.setPointerCapture(e.pointerId);P.classList.add('dragging')});
+  D.addEventListener('pointermove',e=>{if(st)place(e.clientX-st.dx,e.clientY-st.dy,false)});
+  D.addEventListener('pointerup',()=>{if(!st)return;st=null;P.classList.remove('dragging');place(P.offsetLeft,P.offsetTop,true);try{fitSide()}catch(e){}});
+  D.addEventListener('dblclick',e=>{if(P.classList.contains('inpip'))return;if(e.target.closest('button'))return;place(16,16,true);try{fitSide()}catch(e){}});
+  $('dockMin').onclick=()=>{P.classList.toggle('min');$('dockMin').textContent=P.classList.contains('min')?'＋':'—';place(P.offsetLeft,P.offsetTop,true);try{fitSide()}catch(e){}};
+  $('dockMin').textContent=P.classList.contains('min')?'＋':'—';
+  addEventListener('resize',()=>place(P.offsetLeft,P.offsetTop,false))})();
+
 // 深色／淺色模式切換（記住選擇；沒選過就跟系統）
 (()=>{const root=document.documentElement;
   const cur=()=>root.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
-  const paint=()=>document.querySelectorAll('#themeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.th===cur()));
-  document.querySelectorAll('#themeSeg button').forEach(b=>b.onclick=()=>{root.dataset.theme=b.dataset.th;try{localStorage.setItem('annot.theme',b.dataset.th)}catch(e){}paint()});
+  const paint=()=>qsa('#themeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.th===cur()));
+  qsa('#themeSeg button').forEach(b=>b.onclick=()=>{root.dataset.theme=b.dataset.th;if(pipWin)pipWin.document.documentElement.dataset.theme=b.dataset.th;try{localStorage.setItem('annot.theme',b.dataset.th)}catch(e){}paint()});
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',paint);paint()})();
 
 // 樣式切換：填滿／外框
 function setFill(m){fillMode=m;try{localStorage.setItem('annot.style',m)}catch(e){}
-  document.querySelectorAll('#stySeg button').forEach(b=>b.classList.toggle('on',b.dataset.st===m));if(txtBox){txtBox.st=m;draw()}}
-document.querySelectorAll('#stySeg button').forEach(b=>b.onclick=()=>{setFill(b.dataset.st);toast(b.dataset.st==='line'?'外框樣式：白底＋彩色框線':'填滿樣式：色塊＋白字')});
+  qsa('#stySeg button').forEach(b=>b.classList.toggle('on',b.dataset.st===m));if(txtBox){txtBox.st=m;draw()}}
+qsa('#stySeg button').forEach(b=>b.onclick=()=>{setFill(b.dataset.st);toast(b.dataset.st==='line'?'外框樣式：白底＋彩色框線':'填滿樣式：色塊＋白字')});
 setFill(fillMode);
 
 // 字型選單：選了之後，新打的字用這個字型；正在打的字也一起換
@@ -589,7 +696,7 @@ function renderFilm(){$('film').hidden=!docs.length;$('filmCount').textContent=d
     el.onkeydown=e=>{if(e.key==='Enter'){e.stopPropagation();openDoc(d)}};list.append(el)});
   fitSide()}
 function showEmpty(){base=null;shapes=[];hist=[];fut=[];btns();wrap.hidden=true;$('empty').hidden=false;$('dim').textContent='尚未載入圖片'}
-function openDoc(d){if(d===curDoc)return;commitText();saveCur();if(curDoc)queueSave(curDoc);
+function openDoc(d){if(d===curDoc)return;zoom=0;commitText();saveCur();if(curDoc)queueSave(curDoc);
   curDoc=d;base=d.base;shapes=d.shapes;numNext=d.numNext;hist=d.hist||[];fut=d.fut||[];
   cv.width=base.width;cv.height=base.height;crop=null;removeCropBar();$('empty').hidden=true;wrap.hidden=false;
   $('dim').textContent=`${base.width}×${base.height} px`;draw();btns();renderFilm()}
